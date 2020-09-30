@@ -17,7 +17,7 @@ BATCH_SIZE = 1
 # Default Xilinx FPGA type
 # Only Xilinx FPGA is supported.
 # Could be changed through the command line.
-XILINX_FPGA_TYPE = 'xc7vx690tffg1157-2'
+XILINX_FPGA_TYPE = 'xczu7ev-ffvc1156-2-e'
 
 # Target Clock Frequency (MHz)
 # This frequency is only used for performance profile.
