@@ -4,7 +4,7 @@
 # AccDNN Function Mode
 # Set to True when only needs to simulation.
 # Keep it False, if you need to generated FPGA bit/bin file.
-SIMULATION_ONLY = False
+SIMULATION_ONLY = True
 
 # Default Batch Size
 # Could be changed throguh the command line.

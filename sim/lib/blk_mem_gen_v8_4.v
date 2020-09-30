@@ -47,7 +47,7 @@
 --
  *****************************************************************************
  *
- * Filename: BLK_MEM_GEN_v8_1.v
+ * Filename: blk_mem_gen_v8_4_4.v
  *
  * Description:
  *   This file is the Verilog behvarial model for the
@@ -70,7 +70,7 @@
  *****************************************************************************/
 `timescale 1ps/1ps
 
-module STATE_LOGIC_v8_1 (O, I0, I1, I2, I3, I4, I5);
+module STATE_LOGIC_v8_4 (O, I0, I1, I2, I3, I4, I5);
 
   parameter INIT = 64'h0000000000000000;
 
@@ -92,7 +92,7 @@ module STATE_LOGIC_v8_1 (O, I0, I1, I2, I3, I4, I5);
   end
 endmodule
 
-module beh_vlog_muxf7_v8_1 (O, I0, I1, S);
+module beh_vlog_muxf7_v8_4 (O, I0, I1, S);
 
     output O;
     reg    O;
@@ -106,7 +106,7 @@ module beh_vlog_muxf7_v8_1 (O, I0, I1, S);
 		O = I0;
 endmodule
 
-module beh_vlog_ff_clr_v8_1 (Q, C, CLR, D);
+module beh_vlog_ff_clr_v8_4 (Q, C, CLR, D);
   parameter INIT = 0;
 localparam FLOP_DELAY = 100;
     output Q;
@@ -126,7 +126,7 @@ localparam FLOP_DELAY = 100;
 
 endmodule
 
-module beh_vlog_ff_pre_v8_1 (Q, C, D, PRE);
+module beh_vlog_ff_pre_v8_4 (Q, C, D, PRE);
 
   parameter INIT = 0;
 localparam FLOP_DELAY = 100;
@@ -145,7 +145,7 @@ localparam FLOP_DELAY = 100;
 
 endmodule
 
-module beh_vlog_ff_ce_clr_v8_1 (Q, C, CE, CLR, D);
+module beh_vlog_ff_ce_clr_v8_4 (Q, C, CE, CLR, D);
 
   parameter INIT = 0;
 localparam FLOP_DELAY = 100;
@@ -163,7 +163,7 @@ localparam FLOP_DELAY = 100;
 
 endmodule
 
-module write_netlist_v8_1
+module write_netlist_v8_4
 #(
    parameter	     C_AXI_TYPE = 0
  )
@@ -216,7 +216,7 @@ begin
 
   assign NlwRenamedSignal_incr_addr_c = 1'b0;
 
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   aw_ready_r_2 (
       .C ( S_ACLK), 
@@ -224,7 +224,7 @@ begin
       .D ( aw_ready_c), 
       .Q ( aw_ready_r)
     );
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   w_ready_r (
       .C ( S_ACLK), 
@@ -232,7 +232,7 @@ begin
       .D ( w_ready_c), 
       .Q ( w_ready_r_7)
     );
-  beh_vlog_ff_pre_v8_1  #(
+  beh_vlog_ff_pre_v8_4  #(
       .INIT (1'b1))
   present_state_FSM_FFd4 (
       .C ( S_ACLK), 
@@ -240,7 +240,7 @@ begin
       .PRE ( S_ARESETN), 
       .Q ( present_state_FSM_FFd4_16)
     );
- beh_vlog_ff_clr_v8_1 #(
+ beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd3 (
       .C ( S_ACLK), 
@@ -248,7 +248,7 @@ begin
       .D ( present_state_FSM_FFd3_In), 
       .Q ( present_state_FSM_FFd3_13)
     );
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd2 (
       .C ( S_ACLK), 
@@ -256,7 +256,7 @@ begin
       .D ( present_state_FSM_FFd2_In), 
       .Q ( present_state_FSM_FFd2_14)
     );
-beh_vlog_ff_clr_v8_1 #(
+beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd1 (
       .C ( S_ACLK), 
@@ -264,7 +264,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( present_state_FSM_FFd1_In), 
       .Q ( present_state_FSM_FFd1_15)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000055554440))
   present_state_FSM_FFd3_In1 (
       .I0 ( S_AXI_WVALID), 
@@ -275,7 +275,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0), 
       .O ( present_state_FSM_FFd3_In)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000088880800))
   present_state_FSM_FFd2_In1 (
       .I0 ( S_AXI_AWVALID), 
@@ -286,7 +286,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0), 
       .O ( present_state_FSM_FFd2_In)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000AAAA2000))
   Mmux_addr_en_c_0_1 (
       .I0 ( S_AXI_AWVALID), 
@@ -297,7 +297,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0), 
       .O ( addr_en_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'hF5F07570F5F05500))
   Mmux_w_ready_c_0_1 (
       .I0 ( S_AXI_WVALID), 
@@ -308,7 +308,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_14), 
       .O ( w_ready_c)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h88808880FFFF8880))
   present_state_FSM_FFd1_In1 (
       .I0 ( S_AXI_WVALID), 
@@ -319,7 +319,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( S_AXI_BREADY), 
       .O ( present_state_FSM_FFd1_In)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000A8))
   Mmux_S_AXI_WR_EN_0_1 (
       .I0 ( S_AXI_WVALID), 
@@ -330,7 +330,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0), 
       .O ( NlwRenamedSignal_bvalid_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h2F0F27072F0F2200))
   present_state_FSM_FFd4_In1 (
       .I0 ( S_AXI_WVALID), 
@@ -341,7 +341,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_14), 
       .O ( present_state_FSM_FFd4_In1_21)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000F8))
   present_state_FSM_FFd4_In2 ( 
       .I0 ( present_state_FSM_FFd1_15), 
@@ -352,7 +352,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0), 
       .O ( present_state_FSM_FFd4_In)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h7535753575305500))
   Mmux_aw_ready_c_0_1 ( 
       .I0 ( S_AXI_AWVALID), 
@@ -363,7 +363,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_14), 
       .O ( Mmux_aw_ready_c[0])
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000F8))
   Mmux_aw_ready_c_0_2 (
       .I0 ( present_state_FSM_FFd1_15), 
@@ -404,7 +404,7 @@ assign
   bvalid_c = NlwRenamedSig_OI_bvalid_c,
   S_AXI_BVALID = 1'b0;
 
-beh_vlog_ff_clr_v8_1 #(
+beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   aw_ready_r_2
     (
@@ -413,7 +413,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( aw_ready_c),
       .Q ( aw_ready_r)
     );
-beh_vlog_ff_clr_v8_1 #(
+beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   w_ready_r
     (
@@ -422,7 +422,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( w_ready_c),
       .Q ( w_ready_r_8)
     );
- beh_vlog_ff_pre_v8_1  #(
+ beh_vlog_ff_pre_v8_4  #(
       .INIT (1'b1))
   present_state_FSM_FFd4
     (
@@ -431,7 +431,7 @@ beh_vlog_ff_clr_v8_1 #(
       .PRE ( S_ARESETN),
       .Q ( present_state_FSM_FFd4_17)
     );
-beh_vlog_ff_clr_v8_1 #(
+beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd3
     (
@@ -440,7 +440,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( present_state_FSM_FFd3_In),
       .Q ( present_state_FSM_FFd3_18)
     );
-beh_vlog_ff_clr_v8_1 #(
+beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd2
     (
@@ -449,7 +449,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( present_state_FSM_FFd2_In),
       .Q ( present_state_FSM_FFd2_19)
     );
- beh_vlog_ff_clr_v8_1 #(
+ beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd1
     (
@@ -458,7 +458,7 @@ beh_vlog_ff_clr_v8_1 #(
       .D ( present_state_FSM_FFd1_In),
       .Q ( present_state_FSM_FFd1_16)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000005540))
   present_state_FSM_FFd3_In1
     (
@@ -470,7 +470,7 @@ beh_vlog_ff_clr_v8_1 #(
       .I5 (1'b0),
       .O ( present_state_FSM_FFd3_In)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'hBF3FBB33AF0FAA00))
   Mmux_aw_ready_c_0_2
     (
@@ -482,7 +482,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( NlwRenamedSig_OI_bvalid_c),
       .O ( aw_ready_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'hAAAAAAAA20000000))
   Mmux_addr_en_c_0_1
     (
@@ -494,7 +494,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd4_17),
       .O ( addr_en_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000A8))
   Mmux_S_AXI_WR_EN_0_1
     (
@@ -506,7 +506,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( S_AXI_WR_EN)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000002220))
   Mmux_incr_addr_c_0_1
     (
@@ -518,7 +518,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( incr_addr_c)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000008880))
   Mmux_aw_ready_c_0_11
     (
@@ -530,7 +530,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( NlwRenamedSig_OI_bvalid_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h000000000000D5C0))
   present_state_FSM_FFd2_In1
     (
@@ -542,7 +542,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( present_state_FSM_FFd2_In1_24)
     );
-STATE_LOGIC_v8_1 #(
+STATE_LOGIC_v8_4 #(
       .INIT (64'hFFFFAAAA08AAAAAA))
   present_state_FSM_FFd2_In2
     (
@@ -554,7 +554,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_In1_24),
       .O ( present_state_FSM_FFd2_In)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h00C0004000C00000))
   present_state_FSM_FFd4_In1
     (
@@ -566,7 +566,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_19),
       .O ( present_state_FSM_FFd4_In1_25)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000FFFF88F8))
   present_state_FSM_FFd4_In2
     (
@@ -578,7 +578,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( present_state_FSM_FFd4_In)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000007))
   Mmux_w_ready_c_0_SW0
     (
@@ -590,7 +590,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( N2)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'hFABAFABAFAAAF000))
   Mmux_w_ready_c_0_Q
     (
@@ -602,7 +602,7 @@ STATE_LOGIC_v8_1 #(
       .I5 ( present_state_FSM_FFd2_19),
       .O ( w_ready_c)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000008))
   Mmux_aw_ready_c_0_11_SW0
     (
@@ -614,7 +614,7 @@ STATE_LOGIC_v8_1 #(
       .I5 (1'b0),
       .O ( N4)
     );
- STATE_LOGIC_v8_1 #(
+ STATE_LOGIC_v8_4 #(
       .INIT (64'h88808880FFFF8880))
   present_state_FSM_FFd1_In1
     (
@@ -632,7 +632,7 @@ endgenerate
 endmodule
 
 
-module read_netlist_v8_1 #(
+module read_netlist_v8_4 #(
       parameter C_AXI_TYPE                 = 1,
       parameter C_ADDRB_WIDTH              = 12
       ) ( S_AXI_R_LAST_INT, S_ACLK, S_ARESETN, S_AXI_ARVALID,
@@ -687,7 +687,7 @@ module read_netlist_v8_1 #(
   S_AXI_RLAST = gaxi_full_sm_r_last_r_17,
   S_AXI_RVALID = NlwRenamedSig_OI_gaxi_full_sm_r_valid_r;
 
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   gaxi_full_sm_outstanding_read_r (
       .C (S_ACLK),
@@ -695,7 +695,7 @@ module read_netlist_v8_1 #(
       .D(gaxi_full_sm_outstanding_read_c),
       .Q(gaxi_full_sm_outstanding_read_r_15)
     );
-  beh_vlog_ff_ce_clr_v8_1 #(
+  beh_vlog_ff_ce_clr_v8_4 #(
       .INIT (1'b0))
   gaxi_full_sm_r_valid_r (
       .C (S_ACLK),
@@ -704,7 +704,7 @@ module read_netlist_v8_1 #(
       .D (gaxi_full_sm_r_valid_c),
       .Q (NlwRenamedSig_OI_gaxi_full_sm_r_valid_r)
     );
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   gaxi_full_sm_ar_ready_r (
       .C (S_ACLK),
@@ -712,7 +712,7 @@ module read_netlist_v8_1 #(
       .D (gaxi_full_sm_ar_ready_c),
       .Q (gaxi_full_sm_ar_ready_r_16)
     );
-  beh_vlog_ff_ce_clr_v8_1 #(
+  beh_vlog_ff_ce_clr_v8_4 #(
       .INIT(1'b0))
   gaxi_full_sm_r_last_r (
       .C (S_ACLK),
@@ -721,7 +721,7 @@ module read_netlist_v8_1 #(
       .D (NlwRenamedSig_OI_S_AXI_R_LAST),
       .Q (gaxi_full_sm_r_last_r_17)
     );
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd2 (
       .C ( S_ACLK),
@@ -729,7 +729,7 @@ module read_netlist_v8_1 #(
       .D ( present_state_FSM_FFd2_In),
       .Q ( present_state_FSM_FFd2_14)
     );
-  beh_vlog_ff_clr_v8_1 #(
+  beh_vlog_ff_clr_v8_4 #(
       .INIT (1'b0))
   present_state_FSM_FFd1 (
       .C (S_ACLK),
@@ -737,7 +737,7 @@ module read_netlist_v8_1 #(
       .D (present_state_FSM_FFd1_In),
       .Q (present_state_FSM_FFd1_13)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h000000000000000B))
   S_AXI_RREADY_gaxi_full_sm_r_valid_r_OR_9_o1 (
       .I0 ( S_AXI_RREADY),
@@ -748,7 +748,7 @@ module read_netlist_v8_1 #(
       .I5 (1'b0),
       .O (S_AXI_RREADY_gaxi_full_sm_r_valid_r_OR_9_o)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000008))
   Mmux_S_AXI_SINGLE_TRANS11 (
       .I0 (S_AXI_ARVALID),
@@ -759,7 +759,7 @@ module read_netlist_v8_1 #(
       .I5 (1'b0),
       .O (S_AXI_SINGLE_TRANS)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000004))
   Mmux_S_AXI_ADDR_EN11 (
       .I0 (present_state_FSM_FFd1_13),
@@ -770,7 +770,7 @@ module read_netlist_v8_1 #(
       .I5 (1'b0),
       .O (S_AXI_ADDR_EN)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'hECEE2022EEEE2022))
   present_state_FSM_FFd2_In1 (
       .I0 ( S_AXI_ARVALID),
@@ -781,7 +781,7 @@ module read_netlist_v8_1 #(
       .I5 ( NlwRenamedSig_OI_gaxi_full_sm_r_valid_r),
       .O ( present_state_FSM_FFd2_In)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000044440444))
   Mmux_S_AXI_R_LAST131 (
       .I0 ( present_state_FSM_FFd1_13),
@@ -792,7 +792,7 @@ module read_netlist_v8_1 #(
       .I5 (1'b0),
       .O ( Mmux_S_AXI_R_LAST13)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h4000FFFF40004000))
   Mmux_S_AXI_INCR_ADDR11 (
       .I0 ( S_AXI_R_LAST_INT),
@@ -803,7 +803,7 @@ module read_netlist_v8_1 #(
       .I5 ( Mmux_S_AXI_R_LAST13),
       .O ( S_AXI_INCR_ADDR)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000FE))
   S_AXI_ARLEN_7_GND_8_o_equal_1_o_7_SW0 (
       .I0 ( S_AXI_ARLEN[2]),
@@ -814,7 +814,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N01)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000001))
   S_AXI_ARLEN_7_GND_8_o_equal_1_o_7_Q (
       .I0 ( S_AXI_ARLEN[7]),
@@ -825,7 +825,7 @@ module read_netlist_v8_1 #(
       .I5 ( N01),
       .O ( S_AXI_ARLEN_7_GND_8_o_equal_1_o)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000000007))
   Mmux_gaxi_full_sm_outstanding_read_c1_SW0 (
       .I0 ( S_AXI_ARVALID),
@@ -836,7 +836,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N2)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0020000002200200))
   Mmux_gaxi_full_sm_outstanding_read_c1 (
       .I0 ( NlwRenamedSig_OI_gaxi_full_sm_r_valid_r),
@@ -847,7 +847,7 @@ module read_netlist_v8_1 #(
       .I5 ( N2),
       .O ( gaxi_full_sm_outstanding_read_c)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000000004555))
   Mmux_gaxi_full_sm_ar_ready_c12 (
       .I0 ( S_AXI_ARVALID),
@@ -858,7 +858,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( Mmux_gaxi_full_sm_ar_ready_c11)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000000000EF))
   Mmux_S_AXI_R_LAST11_SW0 (
       .I0 ( S_AXI_ARLEN_7_GND_8_o_equal_1_o),
@@ -869,7 +869,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N4)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'hFCAAFC0A00AA000A))
   Mmux_S_AXI_R_LAST11 (
       .I0 ( S_AXI_ARVALID),
@@ -880,7 +880,7 @@ module read_netlist_v8_1 #(
       .I5 ( S_AXI_RREADY_gaxi_full_sm_r_valid_r_OR_9_o),
       .O ( gaxi_full_sm_r_valid_c)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000AAAAAA08))
   S_AXI_MUX_SEL1 (
       .I0 (present_state_FSM_FFd1_13),
@@ -891,7 +891,7 @@ module read_netlist_v8_1 #(
       .I5 (1'b0),
       .O (S_AXI_MUX_SEL)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'hF3F3F755A2A2A200))
   Mmux_S_AXI_RD_EN11 (
       .I0 ( present_state_FSM_FFd1_13),
@@ -902,14 +902,14 @@ module read_netlist_v8_1 #(
       .I5 ( S_AXI_ARVALID),
       .O ( S_AXI_RD_EN)
     );
-  beh_vlog_muxf7_v8_1 present_state_FSM_FFd1_In3 (
+  beh_vlog_muxf7_v8_4 present_state_FSM_FFd1_In3 (
       .I0 ( N8),
       .I1 ( N9),
       .S ( present_state_FSM_FFd1_13),
       .O ( present_state_FSM_FFd1_In)
     );
 
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h000000005410F4F0))
   present_state_FSM_FFd1_In3_F (
       .I0 ( S_AXI_RREADY),
@@ -920,7 +920,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N8)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000072FF7272))
   present_state_FSM_FFd1_In3_G (
       .I0 ( present_state_FSM_FFd2_14),
@@ -931,13 +931,13 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N9)
     );
-  beh_vlog_muxf7_v8_1 Mmux_gaxi_full_sm_ar_ready_c14 (
+  beh_vlog_muxf7_v8_4 Mmux_gaxi_full_sm_ar_ready_c14 (
       .I0 ( N10),
       .I1 ( N11),
       .S ( present_state_FSM_FFd1_13),
       .O ( gaxi_full_sm_ar_ready_c)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000FFFF88A8))
   Mmux_gaxi_full_sm_ar_ready_c14_F (
       .I0 ( S_AXI_ARLEN_7_GND_8_o_equal_1_o),
@@ -948,7 +948,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N10)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h000000008D008D8D))
   Mmux_gaxi_full_sm_ar_ready_c14_G (
       .I0 ( present_state_FSM_FFd2_14),
@@ -959,13 +959,13 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N11)
     );
-  beh_vlog_muxf7_v8_1 Mmux_S_AXI_R_LAST1 (
+  beh_vlog_muxf7_v8_4 Mmux_S_AXI_R_LAST1 (
       .I0 ( N12),
       .I1 ( N13),
       .S ( present_state_FSM_FFd1_13),
       .O ( NlwRenamedSig_OI_S_AXI_R_LAST)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h0000000088088888))
   Mmux_S_AXI_R_LAST1_F (
       .I0 ( S_AXI_ARLEN_7_GND_8_o_equal_1_o),
@@ -976,7 +976,7 @@ module read_netlist_v8_1 #(
       .I5 ( 1'b0),
       .O ( N12)
     );
-  STATE_LOGIC_v8_1 #(
+  STATE_LOGIC_v8_4 #(
       .INIT (64'h00000000E400E4E4))
   Mmux_S_AXI_R_LAST1_G (
       .I0 ( present_state_FSM_FFd2_14),
@@ -991,7 +991,7 @@ module read_netlist_v8_1 #(
 endmodule
 
 
-module blk_mem_axi_write_wrapper_beh_v8_1
+module blk_mem_axi_write_wrapper_beh_v8_4
   # (
     // AXI Interface related parameters start here
     parameter C_INTERFACE_TYPE           = 0, // 0: Native Interface; 1: AXI Interface
@@ -1072,7 +1072,7 @@ module blk_mem_axi_write_wrapper_beh_v8_1
   //-------------------------------------
   //AXI WRITE FSM COMPONENT INSTANTIATION
   //-------------------------------------
- write_netlist_v8_1 #(.C_AXI_TYPE(C_AXI_TYPE)) axi_wr_fsm
+ write_netlist_v8_4 #(.C_AXI_TYPE(C_AXI_TYPE)) axi_wr_fsm
       (
       .S_ACLK(S_ACLK),
       .S_ARESETN(S_ARESETN),
@@ -1267,7 +1267,7 @@ module blk_mem_axi_write_wrapper_beh_v8_1
 
   endmodule
 
-module blk_mem_axi_read_wrapper_beh_v8_1
+module blk_mem_axi_read_wrapper_beh_v8_4
 # (
     //// AXI Interface related parameters start here
     parameter  C_INTERFACE_TYPE           = 0,
@@ -1346,7 +1346,7 @@ module blk_mem_axi_read_wrapper_beh_v8_1
   assign dec_alen_c        = incr_addr_c | r_last_int_c;
 
 
-  read_netlist_v8_1
+  read_netlist_v8_4
   #(.C_AXI_TYPE      (1),
     .C_ADDRB_WIDTH   (C_ADDRB_WIDTH)) 
     axi_read_fsm (
@@ -1490,7 +1490,7 @@ assign araddr_out   =  ((C_AXI_TYPE == 1 && C_AXI_SLAVE_TYPE == 0)?araddr_reg[C_
 
 endmodule
 
-module blk_mem_axi_regs_fwd_v8_1
+module blk_mem_axi_regs_fwd_v8_4
   #(parameter C_DATA_WIDTH = 8
    )(
     input   ACLK,
@@ -1557,10 +1557,10 @@ module blk_mem_axi_regs_fwd_v8_1
 // Output Register Stage module
 //
 // This module builds the output register stages of the memory. This module is 
-// instantiated in the main memory module (BLK_MEM_GEN_v8_1) which is
+// instantiated in the main memory module (blk_mem_gen_v8_4_4) which is
 // declared/implemented further down in this file.
 //*****************************************************************************
-module BLK_MEM_GEN_v8_1_output_stage
+module blk_mem_gen_v8_4_4_output_stage
   #(parameter C_FAMILY              = "virtex7",
     parameter C_XDEVICEFAMILY       = "virtex7",
     parameter C_RST_TYPE            = "SYNC",
@@ -1576,6 +1576,7 @@ module BLK_MEM_GEN_v8_1_output_stage
     parameter C_USE_SOFTECC         = 0,
     parameter C_USE_ECC             = 0,
     parameter NUM_STAGES            = 1,
+	parameter C_EN_ECC_PIPE         = 0,
     parameter FLOP_DELAY            = 100
   )
   (
@@ -1583,14 +1584,15 @@ module BLK_MEM_GEN_v8_1_output_stage
    input                         RST,
    input                         EN,
    input                         REGCE,
-   input      [C_DATA_WIDTH-1:0] DIN,
+   input      [C_DATA_WIDTH-1:0] DIN_I,
    output reg [C_DATA_WIDTH-1:0] DOUT,
-   input                         SBITERR_IN,
-   input                         DBITERR_IN,
+   input                         SBITERR_IN_I,
+   input                         DBITERR_IN_I,
    output reg                    SBITERR,
    output reg                    DBITERR,
-   input      [C_ADDRB_WIDTH-1:0]             RDADDRECC_IN,
-   output reg [C_ADDRB_WIDTH-1:0]             RDADDRECC
+   input      [C_ADDRB_WIDTH-1:0]    RDADDRECC_IN_I,
+   input                         ECCPIPECE,    
+   output reg [C_ADDRB_WIDTH-1:0]    RDADDRECC
 );
 
 //******************************
@@ -1658,6 +1660,13 @@ module BLK_MEM_GEN_v8_1_output_stage
   wire                              en_i;
   wire                              regce_i;
   wire                              rst_i;
+  
+  // Internal signals
+  reg [C_DATA_WIDTH-1:0]     DIN;
+  reg [C_ADDRB_WIDTH-1:0]    RDADDRECC_IN;
+  reg                        SBITERR_IN;
+  reg                        DBITERR_IN;
+
 
   // Internal enable for output registers is tied to user EN or '1' depending
   // on parameters
@@ -1684,7 +1693,11 @@ module BLK_MEM_GEN_v8_1_output_stage
     RDADDRECC = 0;
     SBITERR = 1'b0;
     DBITERR = 1'b0;
-    // This will be one wider than need, but 0 is an error
+	DIN     = {(C_DATA_WIDTH){1'b0}};
+    RDADDRECC_IN = 0;
+    SBITERR_IN = 0;
+	DBITERR_IN = 0;
+	// This will be one wider than need, but 0 is an error
     out_regs = {(REG_STAGES+1){init_val}};
     rdaddrecc_regs = 0;
     sbiterr_regs = {(REG_STAGES+1){1'b0}};
@@ -1703,6 +1716,29 @@ module BLK_MEM_GEN_v8_1_output_stage
     end
   end
   endgenerate
+
+  generate if (C_EN_ECC_PIPE == 0) begin : no_ecc_pipe_reg
+    always @* begin
+      DIN = DIN_I;
+	  SBITERR_IN = SBITERR_IN_I;
+      DBITERR_IN = DBITERR_IN_I;
+      RDADDRECC_IN = RDADDRECC_IN_I;
+    end
+  end
+  endgenerate
+
+  generate if (C_EN_ECC_PIPE == 1) begin : with_ecc_pipe_reg
+    always @(posedge CLK) begin
+      if(ECCPIPECE == 1) begin
+	    DIN <= #FLOP_DELAY DIN_I;
+        SBITERR_IN <= #FLOP_DELAY SBITERR_IN_I;
+        DBITERR_IN <= #FLOP_DELAY DBITERR_IN_I;
+        RDADDRECC_IN <= #FLOP_DELAY RDADDRECC_IN_I;
+      end
+	end
+  end
+  endgenerate
+
 
   //***********************************************
   // NUM_STAGES = 1 
@@ -1820,7 +1856,7 @@ module BLK_MEM_GEN_v8_1_output_stage
   endgenerate
 endmodule
 
-module BLK_MEM_GEN_v8_1_softecc_output_reg_stage
+module blk_mem_gen_v8_4_4_softecc_output_reg_stage
   #(parameter C_DATA_WIDTH          = 32,
     parameter C_ADDRB_WIDTH         = 10,
     parameter C_HAS_SOFTECC_OUTPUT_REGS_B= 0,
@@ -1912,8 +1948,8 @@ endmodule
 //
 // This module is the top-level behavioral model and this implements the RAM 
 //*****************************************************************************
-module BLK_MEM_GEN_v8_1_mem_module
-  #(parameter C_CORENAME                = "blk_mem_gen_v8_1",
+module blk_mem_gen_v8_4_4_mem_module
+  #(parameter C_CORENAME                = "blk_mem_gen_v8_4_4",
     parameter C_FAMILY                  = "virtex7",
     parameter C_XDEVICEFAMILY           = "virtex7",
     parameter C_MEM_TYPE                = 2,
@@ -1969,6 +2005,7 @@ module BLK_MEM_GEN_v8_1_mem_module
     parameter C_COMMON_CLK              = 1,
     parameter FLOP_DELAY                = 100,
     parameter C_DISABLE_WARN_BHV_COLL   = 0,
+	parameter C_EN_ECC_PIPE             = 0,
     parameter C_DISABLE_WARN_BHV_RANGE  = 0
   )
   (input                       CLKA,
@@ -1989,6 +2026,8 @@ module BLK_MEM_GEN_v8_1_mem_module
    output [C_READ_WIDTH_B-1:0] DOUTB,
    input                       INJECTSBITERR,
    input                       INJECTDBITERR,
+   input                       ECCPIPECE,
+   input                       SLEEP,
    output                      SBITERR,
    output                      DBITERR,
    output [C_ADDRB_WIDTH-1:0]  RDADDRECC
@@ -2125,9 +2164,9 @@ module BLK_MEM_GEN_v8_1_mem_module
   //////////////////////////////////////////////////////////////////////////
 
 
-// Note: C_CORENAME parameter is hard-coded to "blk_mem_gen_v8_1" and it is
+// Note: C_CORENAME parameter is hard-coded to "blk_mem_gen_v8_4_4" and it is
 // only used by this module to print warning messages. It is neither passed 
-// down from blk_mem_gen_v8_1_xst.v nor present in the instantiation template
+// down from blk_mem_gen_v8_4_4_xst.v nor present in the instantiation template
 // coregen generates
   
   //***************************************************************************
@@ -2141,7 +2180,7 @@ module BLK_MEM_GEN_v8_1_mem_module
 
   // other constants
   //--------------------------------------------------
-  localparam COLL_DELAY         = 2000;  // 2 ns
+  localparam COLL_DELAY         = 100;  // 100 ps
 
   // locally derived parameters to determine memory shape
   //-----------------------------------------------------
@@ -2244,7 +2283,7 @@ module BLK_MEM_GEN_v8_1_mem_module
   integer write_addr_a_width, read_addr_a_width;
   integer write_addr_b_width, read_addr_b_width;
 
-    localparam C_FAMILY_LOCALPARAM =      (C_FAMILY=="virtex8"?"virtex7":(C_FAMILY=="kintex8" ? "virtex7":(C_FAMILY=="virtex7" ? "virtex7" : (C_FAMILY=="virtex7l" ? "virtex7" : (C_FAMILY=="qvirtex7" ? "virtex7" : (C_FAMILY=="qvirtex7l" ? "virtex7" : (C_FAMILY=="kintex7" ? "virtex7" : (C_FAMILY=="kintex7l" ? "virtex7" : (C_FAMILY=="qkintex7" ? "virtex7" : (C_FAMILY=="qkintex7l" ? "virtex7" : (C_FAMILY=="artix7" ? "virtex7" : (C_FAMILY=="artix7l" ? "virtex7" : (C_FAMILY=="qartix7" ? "virtex7" : (C_FAMILY=="qartix7l" ? "virtex7" : (C_FAMILY=="aartix7" ? "virtex7" : (C_FAMILY=="zynq" ? "virtex7" : (C_FAMILY=="azynq" ? "virtex7" : (C_FAMILY=="qzynq" ? "virtex7" : C_FAMILY))))))))))))))))));
+    localparam C_FAMILY_LOCALPARAM =      (C_FAMILY=="virtexuplushbm"?"virtex7":(C_FAMILY=="zynquplusrfsoc"?"virtex7":(C_FAMILY=="zynquplus"?"virtex7":(C_FAMILY=="kintexuplus"?"virtex7":(C_FAMILY=="virtexuplus"?"virtex7":(C_FAMILY=="virtexu"?"virtex7":(C_FAMILY=="kintexu" ? "virtex7":(C_FAMILY=="virtex7" ? "virtex7" : (C_FAMILY=="virtex7l" ? "virtex7" : (C_FAMILY=="qvirtex7" ? "virtex7" : (C_FAMILY=="qvirtex7l" ? "virtex7" : (C_FAMILY=="kintex7" ? "virtex7" : (C_FAMILY=="kintex7l" ? "virtex7" : (C_FAMILY=="qkintex7" ? "virtex7" : (C_FAMILY=="qkintex7l" ? "virtex7" : (C_FAMILY=="artix7" ? "virtex7" : (C_FAMILY=="artix7l" ? "virtex7" : (C_FAMILY=="qartix7" ? "virtex7" : (C_FAMILY=="qartix7l" ? "virtex7" : (C_FAMILY=="aartix7" ? "virtex7" : (C_FAMILY=="zynq" ? "virtex7" : (C_FAMILY=="azynq" ? "virtex7" : (C_FAMILY=="qzynq" ? "virtex7" : C_FAMILY)))))))))))))))))))))));
 
   // Internal configuration parameters
   //---------------------------------------------
@@ -2277,7 +2316,8 @@ module BLK_MEM_GEN_v8_1_mem_module
   wire [C_WEB_WIDTH-1:0] web_i;
   wire                   rea_i;
   wire                   reb_i;
-
+  wire                   rsta_outp_stage;
+  wire                   rstb_outp_stage;
   // ECC SBITERR/DBITERR Outputs
   //  The ECC Behavior is modeled by the behavioral models only for Virtex-6.
   //  For Virtex-5, these outputs will be tied to 0.
@@ -2289,6 +2329,13 @@ module BLK_MEM_GEN_v8_1_mem_module
   // This effectively wires off optional inputs
   assign ena_i = (C_HAS_ENA==0) || ENA;
   assign enb_i = ((C_HAS_ENB==0) || ENB) && HAS_B_PORT;
+  // To match RTL : In RTL, write enable of the primitive is tied to all 1's and
+  // the enable of the primitive is ANDing of wea(0) and ena. so eventually, the
+  // write operation depends on both enable and write enable. So, the below code
+  // which is actually doing the write operation only on enable ignoring the wea
+  // is removed to be in consistent with RTL.
+  // To Fix CR855535 (The fix to this CR is reverted to match RTL)
+  //assign wea_i = (HAS_A_WRITE == 1 && C_MEM_TYPE == 1 &&C_USE_ECC == 1 && C_HAS_ENA == 1 && ENA == 1) ? 'b1 :(HAS_A_WRITE == 1 && C_MEM_TYPE == 1 &&C_USE_ECC == 1 && C_HAS_ENA == 0) ? WEA : (HAS_A_WRITE && ena_i && C_USE_ECC == 0) ? WEA : 'b0;
   assign wea_i = (HAS_A_WRITE && ena_i) ? WEA : 'b0;
   assign web_i = (HAS_B_WRITE && enb_i) ? WEB : 'b0;
   assign rea_i = (HAS_A_READ)  ? ena_i : 'b0;
@@ -2368,8 +2415,12 @@ module BLK_MEM_GEN_v8_1_mem_module
         // Insert double bit errors:
         if (C_USE_ECC == 1) begin
           if ((C_HAS_INJECTERR == 2 || C_HAS_INJECTERR == 3) && inj_dbiterr == 1'b1) begin
-            current_contents[0] = !(current_contents[0]);
-            current_contents[1] = !(current_contents[1]);
+// Modified for Implementing CR_859399            
+            current_contents[0] = !(current_contents[30]);
+            current_contents[1] = !(current_contents[62]);
+            
+            /*current_contents[0] = !(current_contents[0]);
+            current_contents[1] = !(current_contents[1]);*/
           end
         end
     
@@ -3122,10 +3173,13 @@ module BLK_MEM_GEN_v8_1_mem_module
   //  Instantiate the variable depth output register stage module
   //***************************************************************
   // Port A
-  BLK_MEM_GEN_v8_1_output_stage
+  
+  assign rsta_outp_stage = RSTA & (~SLEEP);
+
+  blk_mem_gen_v8_4_4_output_stage
     #(.C_FAMILY                 (C_FAMILY),
       .C_XDEVICEFAMILY          (C_XDEVICEFAMILY),
-      .C_RST_TYPE               (C_RST_TYPE),
+      .C_RST_TYPE               ("SYNC"),
       .C_HAS_RST                (C_HAS_RSTA),
       .C_RSTRAM                 (C_RSTRAM_A),
       .C_RST_PRIORITY           (C_RST_PRIORITY_A),
@@ -3138,27 +3192,31 @@ module BLK_MEM_GEN_v8_1_mem_module
       .C_USE_SOFTECC            (C_USE_SOFTECC),
       .C_USE_ECC                (C_USE_ECC),
       .NUM_STAGES               (NUM_OUTPUT_STAGES_A),
+	  .C_EN_ECC_PIPE            (0),
       .FLOP_DELAY               (FLOP_DELAY))
       reg_a
         (.CLK         (CLKA),
-         .RST         (RSTA),
+         .RST         (rsta_outp_stage),//(RSTA),
          .EN          (ENA),
          .REGCE       (REGCEA),
-         .DIN         (memory_out_a),
+         .DIN_I       (memory_out_a),
          .DOUT        (DOUTA),
-         .SBITERR_IN  (1'b0),
-         .DBITERR_IN  (1'b0),
+         .SBITERR_IN_I  (1'b0),
+         .DBITERR_IN_I  (1'b0),
          .SBITERR     (),
          .DBITERR     (),
-         .RDADDRECC_IN ({C_ADDRB_WIDTH{1'b0}}),
+         .RDADDRECC_IN_I ({C_ADDRB_WIDTH{1'b0}}),
+		 .ECCPIPECE (1'b0),
          .RDADDRECC   ()
         );
 
+  assign rstb_outp_stage = RSTB & (~SLEEP);
+
   // Port B 
-  BLK_MEM_GEN_v8_1_output_stage
+  blk_mem_gen_v8_4_4_output_stage
     #(.C_FAMILY                 (C_FAMILY),
       .C_XDEVICEFAMILY          (C_XDEVICEFAMILY),
-      .C_RST_TYPE               (C_RST_TYPE),
+      .C_RST_TYPE               ("SYNC"),
       .C_HAS_RST                (C_HAS_RSTB),
       .C_RSTRAM                 (C_RSTRAM_B),
       .C_RST_PRIORITY           (C_RST_PRIORITY_B),
@@ -3171,26 +3229,28 @@ module BLK_MEM_GEN_v8_1_mem_module
       .C_USE_SOFTECC            (C_USE_SOFTECC),
       .C_USE_ECC                (C_USE_ECC),
       .NUM_STAGES               (NUM_OUTPUT_STAGES_B),
+      .C_EN_ECC_PIPE            (C_EN_ECC_PIPE),
       .FLOP_DELAY               (FLOP_DELAY))
       reg_b
         (.CLK         (CLKB),
-         .RST         (RSTB),
+         .RST         (rstb_outp_stage),//(RSTB),
          .EN          (ENB),
          .REGCE       (REGCEB),
-         .DIN         (memory_out_b),
+         .DIN_I       (memory_out_b),
          .DOUT        (dout_i),
-         .SBITERR_IN  (sbiterr_in),
-         .DBITERR_IN  (dbiterr_in),
+         .SBITERR_IN_I  (sbiterr_in),
+         .DBITERR_IN_I  (dbiterr_in),
          .SBITERR     (sbiterr_i),
          .DBITERR     (dbiterr_i),
-         .RDADDRECC_IN (rdaddrecc_in),
+         .RDADDRECC_IN_I (rdaddrecc_in),
+         .ECCPIPECE   (ECCPIPECE),
          .RDADDRECC   (rdaddrecc_i)
         );
 
   //***************************************************************
   //  Instantiate the Input and Output register stages
   //***************************************************************
-BLK_MEM_GEN_v8_1_softecc_output_reg_stage
+blk_mem_gen_v8_4_4_softecc_output_reg_stage
     #(.C_DATA_WIDTH                 (C_READ_WIDTH_B),
       .C_ADDRB_WIDTH                (C_ADDRB_WIDTH),
       .C_HAS_SOFTECC_OUTPUT_REGS_B  (C_HAS_SOFTECC_OUTPUT_REGS_B),
@@ -3211,32 +3271,35 @@ BLK_MEM_GEN_v8_1_softecc_output_reg_stage
   //****************************************************
   // Synchronous collision checks
   //****************************************************
+// CR 780544 : To make verilog model's collison warnings in consistant with
+// vhdl model, the non-blocking assignments are replaced with blocking 
+// assignments.
   generate if (!C_DISABLE_WARN_BHV_COLL && C_COMMON_CLK) begin : sync_coll
     always @(posedge CLKA) begin
       // Possible collision if both are enabled and the addresses match
       if (ena_i && enb_i) begin
         if (wea_i || web_i) begin
-          is_collision <= collision_check(ADDRA, wea_i, ADDRB, web_i);
+          is_collision = collision_check(ADDRA, wea_i, ADDRB, web_i);
         end else begin
-          is_collision <= 0;
+          is_collision = 0;
         end
       end else begin
-          is_collision <= 0;
+          is_collision = 0;
       end
 
       // If the write port is in READ_FIRST mode, there is no collision
       if (C_WRITE_MODE_A=="READ_FIRST" && wea_i && !web_i) begin
-        is_collision <= 0;
+        is_collision = 0;
       end
       if (C_WRITE_MODE_B=="READ_FIRST" && web_i && !wea_i) begin
-        is_collision <= 0;
+        is_collision = 0;
       end
 
       // Only flag if one of the accesses is a write
       if (is_collision && (wea_i || web_i)) begin
         $fwrite(COLLFILE, "%0s collision detected at time: %0d, ",
                 C_CORENAME, $time);
-        $fwrite(COLLFILE, "A %0s address: %0h, B %0s address: %0h\n",
+        $fwrite(COLLFILE, "Instance: %m, A %0s address: %0h, B %0s address: %0h\n",
                 wea_i ? "write" : "read", ADDRA,
                 web_i ? "write" : "read", ADDRB);
       end
@@ -3260,36 +3323,36 @@ BLK_MEM_GEN_v8_1_softecc_output_reg_stage
       // Possible collision if both are enabled and the addresses match
       if (ena_i && enb_i) begin
         if (wea_i || web_i) begin
-          is_collision_a <= collision_check(ADDRA, wea_i, ADDRB, web_i);
+          is_collision_a = collision_check(ADDRA, wea_i, ADDRB, web_i);
         end else begin
-          is_collision_a <= 0;
+          is_collision_a = 0;
         end
       end else begin
-        is_collision_a <= 0;
+        is_collision_a = 0;
       end
 
       if (ena_i && enb_delay) begin
         if(wea_i || web_delay) begin
-          is_collision_delay_a <= collision_check(ADDRA, wea_i, addrb_delay,
+          is_collision_delay_a = collision_check(ADDRA, wea_i, addrb_delay,
                                                                     web_delay);
         end else begin
-          is_collision_delay_a <= 0;
+          is_collision_delay_a = 0;
         end
       end else begin
-        is_collision_delay_a <= 0;
+        is_collision_delay_a = 0;
       end
 
       // Only flag if B access is a write
       if (is_collision_a && web_i) begin
         $fwrite(COLLFILE, "%0s collision detected at time: %0d, ",
                 C_CORENAME, $time);
-        $fwrite(COLLFILE, "A %0s address: %0h, B write address: %0h\n",
+        $fwrite(COLLFILE, "Instance: %m, A %0s address: %0h, B write address: %0h\n",
                 wea_i ? "write" : "read", ADDRA, ADDRB);
 
       end else if (is_collision_delay_a && web_delay) begin
         $fwrite(COLLFILE, "%0s collision detected at time: %0d, ",
                 C_CORENAME, $time);
-        $fwrite(COLLFILE, "A %0s address: %0h, B write address: %0h\n",
+        $fwrite(COLLFILE, "Instance: %m, A %0s address: %0h, B write address: %0h\n",
                 wea_i ? "write" : "read", ADDRA, addrb_delay);
       end
 
@@ -3301,23 +3364,23 @@ BLK_MEM_GEN_v8_1_softecc_output_reg_stage
       // Possible collision if both are enabled and the addresses match
       if (ena_i && enb_i) begin
         if (wea_i || web_i) begin
-          is_collision_b <= collision_check(ADDRA, wea_i, ADDRB, web_i);
+          is_collision_b = collision_check(ADDRA, wea_i, ADDRB, web_i);
         end else begin
-          is_collision_b <= 0;
+          is_collision_b = 0;
         end
       end else begin
-        is_collision_b <= 0;
+        is_collision_b = 0;
       end
 
       if (ena_delay && enb_i) begin
         if (wea_delay || web_i) begin
-          is_collision_delay_b <= collision_check(addra_delay, wea_delay, ADDRB,
+          is_collision_delay_b = collision_check(addra_delay, wea_delay, ADDRB,
                                                                         web_i);
         end else begin
-          is_collision_delay_b <= 0;
+          is_collision_delay_b = 0;
         end
       end else begin
-        is_collision_delay_b <= 0;
+        is_collision_delay_b = 0;
       end
 
 
@@ -3325,13 +3388,13 @@ BLK_MEM_GEN_v8_1_softecc_output_reg_stage
       if (is_collision_b && wea_i) begin
         $fwrite(COLLFILE, "%0s collision detected at time: %0d, ",
                 C_CORENAME, $time);
-        $fwrite(COLLFILE, "A write address: %0h, B %s address: %0h\n",
+        $fwrite(COLLFILE, "Instance: %m, A write address: %0h, B %s address: %0h\n",
                 ADDRA, web_i ? "write" : "read", ADDRB);
 
       end else if (is_collision_delay_b && wea_delay) begin
         $fwrite(COLLFILE, "%0s collision detected at time: %0d, ",
                 C_CORENAME, $time);
-        $fwrite(COLLFILE, "A write address: %0h, B %s address: %0h\n",
+        $fwrite(COLLFILE, "Instance: %m, A write address: %0h, B %s address: %0h\n",
                 addra_delay, web_i ? "write" : "read", ADDRB);
       end
 
@@ -3346,8 +3409,8 @@ endmodule
 // This module is the top-level behavioral model and this implements the memory 
 // module and the input registers
 //*****************************************************************************
-module blk_mem_gen_v8_1
-  #(parameter C_CORENAME                = "blk_mem_gen_v8_1",
+module blk_mem_gen_v8_4_4
+  #(parameter C_CORENAME                = "blk_mem_gen_v8_4_4",
     parameter C_FAMILY                  = "virtex7",
     parameter C_XDEVICEFAMILY           = "virtex7",
     parameter C_ELABORATION_DIR         = "",
@@ -3368,7 +3431,7 @@ module blk_mem_gen_v8_1
     parameter C_INIT_FILE               = "",
     parameter C_USE_DEFAULT_DATA        = 0,
     parameter C_DEFAULT_DATA            = "0",
-    parameter C_RST_TYPE                = "SYNC",
+    //parameter C_RST_TYPE                = "SYNC",
     parameter C_HAS_RSTA                = 0,
     parameter C_RST_PRIORITY_A          = "CE",
     parameter C_RSTRAM_A                = 0,
@@ -3405,12 +3468,26 @@ module blk_mem_gen_v8_1
     parameter C_HAS_SOFTECC_OUTPUT_REGS_B= 0,
     parameter C_MUX_PIPELINE_STAGES     = 0,
     parameter C_USE_SOFTECC             = 0,
+    parameter C_READ_LATENCY_A          = 1,
+    parameter C_READ_LATENCY_B          = 1,
     parameter C_USE_ECC                 = 0,
+	parameter C_EN_ECC_PIPE             = 0,
     parameter C_HAS_INJECTERR           = 0,
     parameter C_SIM_COLLISION_CHECK     = "NONE",
     parameter C_COMMON_CLK              = 1,
     parameter C_DISABLE_WARN_BHV_COLL   = 0,
-    parameter C_DISABLE_WARN_BHV_RANGE  = 0
+	parameter C_EN_SLEEP_PIN            = 0,
+    parameter C_USE_URAM                = 0,
+    parameter C_EN_RDADDRA_CHG          = 0,
+    parameter C_EN_RDADDRB_CHG          = 0,
+    parameter C_EN_DEEPSLEEP_PIN        = 0,
+    parameter C_EN_SHUTDOWN_PIN         = 0,
+	parameter C_EN_SAFETY_CKT           = 0,
+	parameter C_COUNT_36K_BRAM          = "",
+	parameter C_COUNT_18K_BRAM          = "",
+	parameter C_EST_POWER_SUMMARY       = "",
+	parameter C_DISABLE_WARN_BHV_RANGE  = 0
+	
   )
   (input                       clka,
    input                       rsta,
@@ -3433,6 +3510,12 @@ module blk_mem_gen_v8_1
    output                      sbiterr,
    output                      dbiterr,
    output [C_ADDRB_WIDTH-1:0]  rdaddrecc,
+   input                       eccpipece,
+   input                       sleep,
+   input                       deepsleep,
+   input                       shutdown,
+   output                      rsta_busy, 
+   output                      rstb_busy, 
    //AXI BMG Input and Output Port Declarations
  
    //AXI Global Signals
@@ -3653,6 +3736,31 @@ module blk_mem_gen_v8_1
   wire [C_ADDRB_WIDTH-1:0]     S_AXI_RDADDRECC;
   // Added to fix the simulation warning #CR731605
   wire [C_WEB_WIDTH-1:0]       WEB_parameterized = 0;
+  wire                         ECCPIPECE;
+  wire                         SLEEP;
+  reg                          RSTA_BUSY = 0;
+  reg                          RSTB_BUSY = 0;
+  // Declaration of internal signals to avoid warnings #927399
+  wire                         CLKA;
+  wire                         RSTA;
+  wire                         ENA;
+  wire                         REGCEA;
+  wire                         CLKB;
+  wire                         RSTB;
+  wire                         ENB;
+  wire                         REGCEB;
+  wire                         INJECTSBITERR;
+  wire                         INJECTDBITERR;
+  wire                         S_ACLK;
+  wire                         S_ARESETN;
+  wire                         S_AXI_AWVALID;
+  wire                         S_AXI_WLAST;
+  wire                         S_AXI_WVALID;
+  wire                         S_AXI_BREADY;
+  wire                         S_AXI_ARVALID;
+  wire                         S_AXI_RREADY;
+  wire                         S_AXI_INJECTSBITERR;
+  wire                         S_AXI_INJECTDBITERR;
 
   assign CLKA                 = clka;
   assign RSTA                 = rsta;
@@ -3664,6 +3772,8 @@ module blk_mem_gen_v8_1
   assign REGCEB               = regceb;
   assign INJECTSBITERR        = injectsbiterr;
   assign INJECTDBITERR        = injectdbiterr;
+  assign ECCPIPECE            = eccpipece;
+  assign SLEEP                = sleep;
   assign sbiterr              = SBITERR;
   assign dbiterr              = DBITERR;
   assign S_ACLK               = s_aclk;
@@ -3684,6 +3794,9 @@ module blk_mem_gen_v8_1
   assign S_AXI_INJECTDBITERR  = s_axi_injectdbiterr;
   assign s_axi_sbiterr        = S_AXI_SBITERR;
   assign s_axi_dbiterr        = S_AXI_DBITERR;
+
+  assign rsta_busy            = RSTA_BUSY;
+  assign rstb_busy            = RSTB_BUSY;
 
   assign doutb            = DOUTB;
   assign douta            = DOUTA;
@@ -3725,6 +3838,37 @@ module blk_mem_gen_v8_1
   localparam C_AXI_PAYLOAD = (C_HAS_MUX_OUTPUT_REGS_B == 1)?C_WRITE_WIDTH_B+C_AXI_ID_WIDTH+3:C_AXI_ID_WIDTH+3;
   wire [C_AXI_PAYLOAD-1 : 0] s_axi_payload_c;
   wire [C_AXI_PAYLOAD-1 : 0] m_axi_payload_c;
+
+// Safety logic related signals
+
+  reg [4:0] RSTA_SHFT_REG = 0;
+  reg POR_A = 0; 
+  reg [4:0] RSTB_SHFT_REG = 0;
+  reg POR_B = 0;
+ 
+  reg ENA_dly = 0;
+  reg ENA_dly_D = 0;
+
+  reg ENB_dly = 0;
+  reg ENB_dly_D = 0;
+
+  wire RSTA_I_SAFE;
+  wire RSTB_I_SAFE;
+
+  wire ENA_I_SAFE;
+  wire ENB_I_SAFE;
+  
+  reg ram_rstram_a_busy = 0;
+  reg ram_rstreg_a_busy = 0;
+  reg ram_rstram_b_busy = 0;
+  reg ram_rstreg_b_busy = 0;
+
+  reg ENA_dly_reg = 0;
+  reg ENB_dly_reg = 0;
+ 
+  reg ENA_dly_reg_D = 0;
+  reg ENB_dly_reg_D = 0;
+
   //**************
   // log2roundup
   //**************
@@ -3830,8 +3974,125 @@ module blk_mem_gen_v8_1
       end //end input_reg_stages generate statement
  endgenerate
 
+  //**************************************************************************
+  // NO SAFETY LOGIC
+  //**************************************************************************
+
+   generate 
+     if (C_EN_SAFETY_CKT == 0) begin : NO_SAFETY_CKT_GEN
+       assign ENA_I_SAFE     = ena_in;
+       assign ENB_I_SAFE     = ENB;
+       assign RSTA_I_SAFE    = rsta_in;
+       assign RSTB_I_SAFE    = RSTB;
+     end
+   endgenerate
+
+  //***************************************************************************
+  // SAFETY LOGIC
+  // Power-ON Reset Generation
+  //***************************************************************************
+  generate 
+    if (C_EN_SAFETY_CKT == 1) begin
+      always @(posedge clka)  RSTA_SHFT_REG <= #FLOP_DELAY {RSTA_SHFT_REG[3:0],1'b1} ;
+      always @(posedge clka)  POR_A <= #FLOP_DELAY RSTA_SHFT_REG[4] ^ RSTA_SHFT_REG[0];
+      always @(posedge clkb)  RSTB_SHFT_REG <= #FLOP_DELAY {RSTB_SHFT_REG[3:0],1'b1} ;
+      always @(posedge clkb)  POR_B <= #FLOP_DELAY RSTB_SHFT_REG[4] ^ RSTB_SHFT_REG[0]; 
+ 
+      assign RSTA_I_SAFE = rsta_in | POR_A;  
+      assign RSTB_I_SAFE = (C_MEM_TYPE == 0 || C_MEM_TYPE == 3) ? 1'b0 : (RSTB | POR_B);
+    end
+  endgenerate
+
+  //-----------------------------------------------------------------------------
+  //  -- RSTA/B_BUSY Generation
+  //-----------------------------------------------------------------------------
+
+  generate 
+    if ((C_HAS_MEM_OUTPUT_REGS_A==0 || (C_HAS_MEM_OUTPUT_REGS_A==1 && C_RSTRAM_A==1)) && (C_EN_SAFETY_CKT == 1)) begin : RSTA_BUSY_NO_REG
+      always @(*) ram_rstram_a_busy = RSTA_I_SAFE | ENA_dly | ENA_dly_D;
+      always @(posedge clka) RSTA_BUSY <= #FLOP_DELAY ram_rstram_a_busy;
+    end
+  endgenerate
+  
+  generate 
+    if (C_HAS_MEM_OUTPUT_REGS_A==1 && C_RSTRAM_A==0 && C_EN_SAFETY_CKT == 1) begin : RSTA_BUSY_WITH_REG
+      always @(*) ram_rstreg_a_busy = RSTA_I_SAFE | ENA_dly_reg | ENA_dly_reg_D;
+      always @(posedge clka) RSTA_BUSY <= #FLOP_DELAY ram_rstreg_a_busy;
+    end
+  endgenerate
+
+  generate 
+    if ( (C_MEM_TYPE == 0 || C_MEM_TYPE == 3) && C_EN_SAFETY_CKT == 1) begin : SPRAM_RST_BUSY
+      always @(*) RSTB_BUSY = 1'b0;
+    end
+  endgenerate
+
+  generate 
+    if ( (C_HAS_MEM_OUTPUT_REGS_B==0 || (C_HAS_MEM_OUTPUT_REGS_B==1 && C_RSTRAM_B==1)) && (C_MEM_TYPE != 0 && C_MEM_TYPE != 3) && C_EN_SAFETY_CKT == 1)  begin : RSTB_BUSY_NO_REG
+      always @(*) ram_rstram_b_busy = RSTB_I_SAFE | ENB_dly | ENB_dly_D;
+      always @(posedge clkb) RSTB_BUSY <= #FLOP_DELAY ram_rstram_b_busy;
+    end
+  endgenerate
+    
+  generate 
+    if (C_HAS_MEM_OUTPUT_REGS_B==1 && C_RSTRAM_B==0 && C_MEM_TYPE != 0 && C_MEM_TYPE != 3 && C_EN_SAFETY_CKT == 1) begin : RSTB_BUSY_WITH_REG  
+      always @(*) ram_rstreg_b_busy = RSTB_I_SAFE | ENB_dly_reg | ENB_dly_reg_D;
+      always @(posedge clkb) RSTB_BUSY <= #FLOP_DELAY ram_rstreg_b_busy;
+    end
+  endgenerate
+
+  //-----------------------------------------------------------------------------
+  //  -- ENA/ENB Generation
+  //-----------------------------------------------------------------------------
+  
+  generate 
+    if ((C_HAS_MEM_OUTPUT_REGS_A==0 || (C_HAS_MEM_OUTPUT_REGS_A==1 && C_RSTRAM_A==1)) && C_EN_SAFETY_CKT == 1) begin : ENA_NO_REG    
+      always @(posedge clka) begin
+        ENA_dly   <= #FLOP_DELAY RSTA_I_SAFE;
+        ENA_dly_D <= #FLOP_DELAY ENA_dly;
+      end
+      assign ENA_I_SAFE = (C_HAS_ENA == 0)? 1'b1 : (ENA_dly_D | ena_in);
+    end
+  endgenerate
+
+  generate 
+    if ( (C_HAS_MEM_OUTPUT_REGS_A==1 && C_RSTRAM_A==0) && C_EN_SAFETY_CKT == 1) begin : ENA_WITH_REG
+      always @(posedge clka) begin
+        ENA_dly_reg   <= #FLOP_DELAY RSTA_I_SAFE;
+        ENA_dly_reg_D <= #FLOP_DELAY ENA_dly_reg;
+      end
+      assign ENA_I_SAFE = (C_HAS_ENA == 0)? 1'b1 : (ENA_dly_reg_D | ena_in);
+    end
+  endgenerate
+
+  generate 
+    if (C_MEM_TYPE == 0 || C_MEM_TYPE == 3) begin : SPRAM_ENB
+      assign ENB_I_SAFE = 1'b0;
+    end
+  endgenerate
+
+  generate 
+    if ((C_HAS_MEM_OUTPUT_REGS_B==0 || (C_HAS_MEM_OUTPUT_REGS_B==1 && C_RSTRAM_B==1)) && C_MEM_TYPE != 0 && C_MEM_TYPE != 3 && C_EN_SAFETY_CKT == 1) begin : ENB_NO_REG
+      always @(posedge clkb) begin : PROC_ENB_GEN
+        ENB_dly   <= #FLOP_DELAY RSTB_I_SAFE;
+        ENB_dly_D <= #FLOP_DELAY ENB_dly;
+      end
+      assign ENB_I_SAFE = (C_HAS_ENB == 0)? 1'b1 : (ENB_dly_D | ENB);
+    end
+  endgenerate
+  
+  generate 
+    if (C_HAS_MEM_OUTPUT_REGS_B==1 && C_RSTRAM_B==0 && C_MEM_TYPE != 0 && C_MEM_TYPE != 3 && C_EN_SAFETY_CKT == 1)begin : ENB_WITH_REG
+      always @(posedge clkb) begin : PROC_ENB_GEN
+        ENB_dly_reg    <= #FLOP_DELAY RSTB_I_SAFE;
+        ENB_dly_reg_D  <= #FLOP_DELAY ENB_dly_reg;
+      end
+      assign ENB_I_SAFE = (C_HAS_ENB == 0)? 1'b1 : (ENB_dly_reg_D | ENB);
+    end
+  endgenerate
+
   generate if ((C_INTERFACE_TYPE == 0) && (C_ENABLE_32BIT_ADDRESS == 0)) begin : native_mem_module
-BLK_MEM_GEN_v8_1_mem_module
+blk_mem_gen_v8_4_4_mem_module
   #(.C_CORENAME                        (C_CORENAME),
     .C_FAMILY                          (C_FAMILY),
     .C_XDEVICEFAMILY                   (C_XDEVICEFAMILY),
@@ -3845,7 +4106,7 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_INIT_FILE                       (C_INIT_FILE),
     .C_USE_DEFAULT_DATA                (C_USE_DEFAULT_DATA),
     .C_DEFAULT_DATA                    (C_DEFAULT_DATA),
-    .C_RST_TYPE                        (C_RST_TYPE),
+    .C_RST_TYPE                        ("SYNC"),
     .C_HAS_RSTA                        (C_HAS_RSTA),
     .C_RST_PRIORITY_A                  (C_RST_PRIORITY_A),
     .C_RSTRAM_A                        (C_RSTRAM_A),
@@ -3888,19 +4149,20 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_COMMON_CLK                      (C_COMMON_CLK),
     .FLOP_DELAY                        (FLOP_DELAY),
     .C_DISABLE_WARN_BHV_COLL           (C_DISABLE_WARN_BHV_COLL),
+ .C_EN_ECC_PIPE                     (C_EN_ECC_PIPE),
     .C_DISABLE_WARN_BHV_RANGE          (C_DISABLE_WARN_BHV_RANGE))
-    blk_mem_gen_v8_1_inst
+    blk_mem_gen_v8_4_4_inst
    (.CLKA            (CLKA),
-   .RSTA             (rsta_in),
-   .ENA              (ena_in),
+   .RSTA             (RSTA_I_SAFE),//(rsta_in),
+   .ENA              (ENA_I_SAFE),//(ena_in),
    .REGCEA           (regcea_in),
    .WEA              (wea_in),
    .ADDRA            (addra_in),
    .DINA             (dina_in),
    .DOUTA            (DOUTA),
    .CLKB             (CLKB),
-   .RSTB             (RSTB),
-   .ENB              (ENB),
+   .RSTB             (RSTB_I_SAFE),//(RSTB),
+   .ENB              (ENB_I_SAFE),//(ENB),
    .REGCEB           (REGCEB),
    .WEB              (WEB),
    .ADDRB            (ADDRB),
@@ -3908,6 +4170,8 @@ BLK_MEM_GEN_v8_1_mem_module
    .DOUTB            (DOUTB),
    .INJECTSBITERR    (injectsbiterr_in),
    .INJECTDBITERR    (injectdbiterr_in),
+   .ECCPIPECE        (ECCPIPECE),
+   .SLEEP            (SLEEP),
    .SBITERR          (SBITERR),
    .DBITERR          (DBITERR),
    .RDADDRECC        (RDADDRECC)
@@ -3938,7 +4202,7 @@ BLK_MEM_GEN_v8_1_mem_module
   // The following two constants determine this.
 
   localparam MEM_MAP_LOWER_BOUND_VAL_A      = (log2int(divroundup(C_WRITE_WIDTH_A,8)==0)) ? 0:(log2int(divroundup(C_WRITE_WIDTH_A,8)));
-  localparam MEM_MAP_LOWER_BOUND_VAL_B      = (log2int(divroundup(C_WRITE_WIDTH_A,8)==0)) ? 0:(log2int(divroundup(C_WRITE_WIDTH_A,8)));
+  localparam MEM_MAP_LOWER_BOUND_VAL_B      = (log2int(divroundup(C_WRITE_WIDTH_B,8)==0)) ? 0:(log2int(divroundup(C_WRITE_WIDTH_B,8)));
   localparam C_MEM_MAP_ADDRA_WIDTH_LSB = MEM_MAP_LOWER_BOUND_VAL_A;
   localparam C_MEM_MAP_ADDRB_WIDTH_LSB = MEM_MAP_LOWER_BOUND_VAL_B;
 
@@ -3950,7 +4214,7 @@ BLK_MEM_GEN_v8_1_mem_module
   assign lsb_zero_i = 0;
   assign RDADDRECC  = {msb_zero_i,rdaddrecc_i,lsb_zero_i};
 
-BLK_MEM_GEN_v8_1_mem_module
+blk_mem_gen_v8_4_4_mem_module
   #(.C_CORENAME                        (C_CORENAME),
     .C_FAMILY                          (C_FAMILY),
     .C_XDEVICEFAMILY                   (C_XDEVICEFAMILY),
@@ -3964,7 +4228,7 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_INIT_FILE                       (C_INIT_FILE),
     .C_USE_DEFAULT_DATA                (C_USE_DEFAULT_DATA),
     .C_DEFAULT_DATA                    (C_DEFAULT_DATA),
-    .C_RST_TYPE                        (C_RST_TYPE),
+    .C_RST_TYPE                        ("SYNC"),
     .C_HAS_RSTA                        (C_HAS_RSTA),
     .C_RST_PRIORITY_A                  (C_RST_PRIORITY_A),
     .C_RSTRAM_A                        (C_RSTRAM_A),
@@ -4007,19 +4271,20 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_COMMON_CLK                      (C_COMMON_CLK),
     .FLOP_DELAY                        (FLOP_DELAY),
     .C_DISABLE_WARN_BHV_COLL           (C_DISABLE_WARN_BHV_COLL),
+ .C_EN_ECC_PIPE                     (C_EN_ECC_PIPE),
     .C_DISABLE_WARN_BHV_RANGE          (C_DISABLE_WARN_BHV_RANGE))
-    blk_mem_gen_v8_1_inst
+    blk_mem_gen_v8_4_4_inst
    (.CLKA            (CLKA),
-   .RSTA             (rsta_in),
-   .ENA              (ena_in),
+   .RSTA             (RSTA_I_SAFE),//(rsta_in),
+   .ENA              (ENA_I_SAFE),//(ena_in),
    .REGCEA           (regcea_in),
    .WEA              (wea_in),
    .ADDRA            (addra_in[C_MEM_MAP_ADDRA_WIDTH_MSB-1:C_MEM_MAP_ADDRA_WIDTH_LSB]),
    .DINA             (dina_in),
    .DOUTA            (DOUTA),
    .CLKB             (CLKB),
-   .RSTB             (RSTB),
-   .ENB              (ENB),
+   .RSTB             (RSTB_I_SAFE),//(RSTB),
+   .ENB              (ENB_I_SAFE),//(ENB),
    .REGCEB           (REGCEB),
    .WEB              (WEB),
    .ADDRB            (ADDRB[C_MEM_MAP_ADDRB_WIDTH_MSB-1:C_MEM_MAP_ADDRB_WIDTH_LSB]),
@@ -4027,6 +4292,8 @@ BLK_MEM_GEN_v8_1_mem_module
    .DOUTB            (DOUTB),
    .INJECTSBITERR    (injectsbiterr_in),
    .INJECTDBITERR    (injectdbiterr_in),
+   .ECCPIPECE        (ECCPIPECE),
+   .SLEEP            (SLEEP),
    .SBITERR          (SBITERR),
    .DBITERR          (DBITERR),
    .RDADDRECC        (rdaddrecc_i)
@@ -4074,12 +4341,12 @@ BLK_MEM_GEN_v8_1_mem_module
 
   generate if (C_HAS_MUX_OUTPUT_REGS_B == 1 || C_HAS_MEM_OUTPUT_REGS_B == 1) begin : has_regs_fwd
 
-    blk_mem_axi_regs_fwd_v8_1
+    blk_mem_axi_regs_fwd_v8_4
       #(.C_DATA_WIDTH    (C_AXI_PAYLOAD))
     axi_regs_inst (
-        .ACLK           (S_ACLK),	
+        .ACLK           (S_ACLK), 
         .ARESET         (s_aresetn_a_c),
-        .S_VALID        (s_axi_rvalid_c),	
+        .S_VALID        (s_axi_rvalid_c), 
         .S_READY        (s_axi_rready_c),
         .S_PAYLOAD_DATA (s_axi_payload_c),
         .M_VALID        (S_AXI_RVALID),
@@ -4096,7 +4363,7 @@ assign S_AXI_BRESP = 2'b00;
 assign s_axi_rresp_c = 2'b00;
 assign s_axi_arlen_c = (C_AXI_TYPE == 1)?S_AXI_ARLEN:8'h0;
 
-  blk_mem_axi_write_wrapper_beh_v8_1
+  blk_mem_axi_write_wrapper_beh_v8_4
     #(.C_INTERFACE_TYPE           (C_INTERFACE_TYPE),
       .C_AXI_TYPE                 (C_AXI_TYPE),
       .C_AXI_SLAVE_TYPE           (C_AXI_SLAVE_TYPE),
@@ -4130,7 +4397,7 @@ assign s_axi_arlen_c = (C_AXI_TYPE == 1)?S_AXI_ARLEN:8'h0;
       .S_AXI_WR_EN                (s_axi_wr_en_c)
       );
 
-  blk_mem_axi_read_wrapper_beh_v8_1
+  blk_mem_axi_read_wrapper_beh_v8_4
   #(.C_INTERFACE_TYPE             (C_INTERFACE_TYPE), 
     .C_AXI_TYPE		          (C_AXI_TYPE), 
     .C_AXI_SLAVE_TYPE             (C_AXI_SLAVE_TYPE), 
@@ -4163,7 +4430,7 @@ assign s_axi_arlen_c = (C_AXI_TYPE == 1)?S_AXI_ARLEN:8'h0;
     .S_AXI_RD_EN                  (s_axi_rd_en_c)
   );
 
-BLK_MEM_GEN_v8_1_mem_module
+blk_mem_gen_v8_4_4_mem_module
   #(.C_CORENAME                        (C_CORENAME),
     .C_FAMILY                          (C_FAMILY),
     .C_XDEVICEFAMILY                   (C_XDEVICEFAMILY),
@@ -4177,7 +4444,7 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_INIT_FILE                       (C_INIT_FILE),
     .C_USE_DEFAULT_DATA                (C_USE_DEFAULT_DATA),
     .C_DEFAULT_DATA                    (C_DEFAULT_DATA),
-    .C_RST_TYPE                        (C_RST_TYPE),
+    .C_RST_TYPE                        ("SYNC"),
     .C_HAS_RSTA                        (C_HAS_RSTA),
     .C_RST_PRIORITY_A                  (C_RST_PRIORITY_A),
     .C_RSTRAM_A                        (C_RSTRAM_A),
@@ -4220,8 +4487,9 @@ BLK_MEM_GEN_v8_1_mem_module
     .C_COMMON_CLK                      (C_COMMON_CLK),
     .FLOP_DELAY                        (FLOP_DELAY),
     .C_DISABLE_WARN_BHV_COLL           (C_DISABLE_WARN_BHV_COLL),
+	.C_EN_ECC_PIPE                     (0),
     .C_DISABLE_WARN_BHV_RANGE          (C_DISABLE_WARN_BHV_RANGE))
-    blk_mem_gen_v8_1_inst
+    blk_mem_gen_v8_4_4_inst
    (.CLKA            (S_ACLK),
    .RSTA             (s_aresetn_a_c),
    .ENA              (s_axi_wr_en_c),
@@ -4242,6 +4510,8 @@ BLK_MEM_GEN_v8_1_mem_module
    .INJECTDBITERR    (injectdbiterr_in),
    .SBITERR          (SBITERR),
    .DBITERR          (DBITERR),
+   .ECCPIPECE        (1'b0),
+   .SLEEP            (1'b0),
    .RDADDRECC        (RDADDRECC)
   );
  end
