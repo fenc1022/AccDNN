@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-//`define half_clk_cycle 50
+`define half_clk_cycle 50
 `define total_input_count 6912 //96*2
 `define total_weight_count 3468 //516262 //4568 //4544
 `define iterations 3
@@ -29,7 +29,7 @@ wire  [`databus_width-1:0]	      blob_dout;
 wire              write_done;
 wire              ddr_din_rdy;
 
-wire              clk;
+reg               clk = 1'b0;
 reg               ddr_rst;
 reg               rst;
 wire              init_calib_complete;
@@ -286,7 +286,7 @@ top_dma_ddr  u0_top_dma_ddr (
 //      $fsdbDumpvars;
 //    end	
 	
-//always #`half_clk_cycle clk = ~clk;
+always #`half_clk_cycle clk <= ~clk;
 
 initial 
   begin
@@ -299,12 +299,13 @@ initial
     write_req = 1'b0;
     #10
     ddr_rst = 1'b1;
+    rst = 1'b1;
     #200;
     ddr_rst = 1'b0;
     #2000;
     rst = 1'b1;
     // Wait 100 ns for global reset to finish
-    #10;
+    #1000;
     rst = 1'b0;
     blob_dout_rdy = 1'b1;   
 

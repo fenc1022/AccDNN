@@ -212,10 +212,11 @@ input  [26:0]           read_length_15;
 output                  read_ack_15;
 
 output                  init_calib_complete;
-output                  clk;
+input                   clk;
 input                   rst;
 input                   ddr_rst;
   
+wire                                  ddr_clk;
 wire [29:0]                           app_addr;
 wire [2:0]                            app_cmd;
 wire                                  app_en;
@@ -265,7 +266,7 @@ ddr_mode  u_ddr3_sim_top
 .app_rd_data_valid   (app_rd_data_valid),
 .app_rdy             (app_rdy),
 .app_wdf_rdy         (app_wdf_rdy),
-.clk_ddr             (clk),
+.clk_ddr             (ddr_clk),
 .reset               (ddr_rst)
 );
 
@@ -273,7 +274,7 @@ ddr_mode  u_ddr3_sim_top
 ddr3_dma_engineer  u_ddr3_dma_engineer 
 (
     .clk                     ( clk                   ),
-    .ddr_clk                 ( clk                   ),
+    .ddr_clk                 ( ddr_clk               ),
     .rst                     ( rst                   ),
     .write_req               ( write_req             ),
     .write_start_addr        ( write_start_addr      ),
