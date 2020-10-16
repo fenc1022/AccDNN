@@ -1,245 +1,158 @@
-module ddr3_dma_read
-(
-   clk,
-   ddr_clk,
-   rst,
-   //ddr3 Interface  
-   init_calib_complete,
-   app_addr,
-   app_cmd,
-   app_rdy,
-   app_en,
-   app_rd_data,
-   app_rd_data_end,
-   app_rd_data_valid,
-   //dma Interface
-   ddr_read,
-   dout_rdy,
-   dout,
-   dout_en,
-   dout_eop,
-   
-   read_req_0,
-   read_start_addr_0,
-   read_length_0,
-   read_ack_0,
+`define C_M_AXI_ADDR_WIDTH 32
 
-   read_req_1,
-   read_start_addr_1,
-   read_length_1,
-   read_ack_1,
-   
-   read_req_2,
-   read_start_addr_2,
-   read_length_2,
-   read_ack_2,
-   
-   read_req_3,
-   read_start_addr_3,
-   read_length_3,
-   read_ack_3,
-   
-   read_req_4,
-   read_start_addr_4,
-   read_length_4,
-   read_ack_4,
-   
-   read_req_5,
-   read_start_addr_5,
-   read_length_5,
-   read_ack_5,
-   
-   read_req_6,
-   read_start_addr_6,
-   read_length_6,
-   read_ack_6,
-   
-   read_req_7,
-   read_start_addr_7,
-   read_length_7,
-   read_ack_7,
-   
-   read_req_8,
-   read_start_addr_8,
-   read_length_8,
-   read_ack_8,
-   
-   read_req_9,
-   read_start_addr_9,
-   read_length_9,
-   read_ack_9,
-   
-   read_req_10,
-   read_start_addr_10,
-   read_length_10,
-   read_ack_10,
-   
-   read_req_11,
-   read_start_addr_11,
-   read_length_11,
-   read_ack_11,
-   
-   read_req_12,
-   read_start_addr_12,
-   read_length_12,
-   read_ack_12,
-   
-   read_req_13,
-   read_start_addr_13,
-   read_length_13,
-   read_ack_13,
-   
-   read_req_14,
-   read_start_addr_14,
-   read_length_14,
-   read_ack_14,
-   
-   read_req_15,
-   read_start_addr_15,
-   read_length_15,
-   read_ack_15   
+module ddr3_dma_read #(
+  parameter C_S_AXI_ID_WIDTH = 4,
+  parameter integer C_M_AXI_BURST_LEN = 1, // Only support 1 for now
+  parameter integer C_M_AXI_DATA_WIDTH = 512
+) (
+input                   clk,
+input                   ddr_clk,
+input                   rst,
+//ddr3 Interface
+input                   init_calib_complete,
+input                   axi_aresetn,
+// axi read address
+output reg [`C_M_AXI_ADDR_WIDTH-1:0]       m_axi_araddr,
+output reg [7:0]                           m_axi_arlen,
+output  [2:0]                           m_axi_arsize,
+output  [1:0]                           m_axi_arburst,
+output  [3:0]                           m_axi_arcache,
+output                                  m_axi_arvalid,
+input                                   m_axi_arready,
+output  [C_S_AXI_ID_WIDTH-1:0]          m_axi_arid,
+output                                  m_axi_arlock,
+output  [2:0]                           m_axi_arprot,
+output  [3:0]                           m_axi_arqos,
+output  [0:0]                           m_axi_aruser,
+// axi read data
+input   [C_M_AXI_DATA_WIDTH-1:0]        m_axi_rdata,
+input   [1:0]                           m_axi_rresp,
+input                                   m_axi_rlast,
+input                                   m_axi_rvalid,
+output                                  m_axi_rready,
+input   [C_S_AXI_ID_WIDTH:0]            m_axi_rid,
+input   [0:0]                           m_axi_ruser,
+
+//dma Interface
+//output                  ddr_read,
+input                   dout_rdy,
+output reg [511:0]          dout,
+output reg [15:0]           dout_en,
+output reg                  dout_eop,
+
+input                   read_req_0,
+input  [26:0]           read_start_addr_0,
+input  [26:0]           read_length_0,
+output reg                 read_ack_0,
+
+input                   read_req_1,
+input  [26:0]           read_start_addr_1,
+input  [26:0]           read_length_1,
+output reg                 read_ack_1,
+
+input                   read_req_2,
+input  [26:0]           read_start_addr_2,
+input  [26:0]           read_length_2,
+output reg                 read_ack_2,
+
+
+input                   read_req_3,
+input  [26:0]           read_start_addr_3,
+input  [26:0]           read_length_3,
+output reg                 read_ack_3,
+
+input                   read_req_4,
+input  [26:0]           read_start_addr_4,
+input  [26:0]           read_length_4,
+output reg                 read_ack_4,
+
+input                   read_req_5,
+input  [26:0]           read_start_addr_5,
+input  [26:0]           read_length_5,
+output reg                 read_ack_5,
+
+input                   read_req_6,
+input  [26:0]           read_start_addr_6,
+input  [26:0]           read_length_6,
+output reg                 read_ack_6,
+
+
+input                   read_req_7,
+input  [26:0]           read_start_addr_7,
+input  [26:0]           read_length_7,
+output reg                 read_ack_7,
+
+input                   read_req_8,
+input  [26:0]           read_start_addr_8,
+input  [26:0]           read_length_8,
+output reg                 read_ack_8,
+
+input                   read_req_9,
+input  [26:0]           read_start_addr_9,
+input  [26:0]           read_length_9,
+output reg                 read_ack_9,
+
+input                   read_req_10,
+input  [26:0]           read_start_addr_10,
+input  [26:0]           read_length_10,
+output reg                 read_ack_10,
+
+input                   read_req_11,
+input  [26:0]           read_start_addr_11,
+input  [26:0]           read_length_11,
+output reg                 read_ack_11,
+
+input                   read_req_12,
+input  [26:0]           read_start_addr_12,
+input  [26:0]           read_length_12,
+output reg                 read_ack_12,
+
+input                   read_req_13,
+input  [26:0]           read_start_addr_13,
+input  [26:0]           read_length_13,
+output reg                 read_ack_13,
+
+input                   read_req_14,
+input  [26:0]           read_start_addr_14,
+input  [26:0]           read_length_14,
+output reg                 read_ack_14,
+
+input                   read_req_15,
+input  [26:0]           read_start_addr_15,
+input  [26:0]           read_length_15,
+output reg                 read_ack_15
 );
 
-parameter WIDTH = 16;
-parameter MAX_ACK_DELAY = 4;
+localparam WIDTH = 16;
+localparam MAX_ACK_DELAY = 4;
 
-input                   clk;
-input                   ddr_clk;
-input                   rst;
-//ddr3 Interface
-input                   init_calib_complete;
-output [29:0]			app_addr;
-output [2:0]    		app_cmd;
-input		     	    app_rdy;
-output                  app_en;
-input  [511:0]          app_rd_data;
-input                   app_rd_data_end;
-input                   app_rd_data_valid;
-//dma Interface
-output                  ddr_read;
-input                   dout_rdy;
-output [511:0]          dout;
-output [15:0]           dout_en;
-output                  dout_eop;
-
-input                   read_req_0;
-input  [26:0]           read_start_addr_0;
-input  [26:0]           read_length_0;
-output                  read_ack_0;
-
-
-input                   read_req_1;
-input  [26:0]           read_start_addr_1;
-input  [26:0]           read_length_1;
-output                  read_ack_1;
+// Initialize registered output
+initial
+begin
+  m_axi_araddr = 0;
+  m_axi_arlen = 8'h0;
+  dout = 0;
+  dout_en = 0;
+  dout_eop = 0;
+  read_ack_0  = 0;
+  read_ack_1  = 0;
+  read_ack_2  = 0;
+  read_ack_3  = 0;
+  read_ack_4  = 0;
+  read_ack_5  = 0;
+  read_ack_6  = 0;
+  read_ack_7  = 0;
+  read_ack_8  = 0;
+  read_ack_9  = 0;
+  read_ack_10 = 0;
+  read_ack_11 = 0;
+  read_ack_12 = 0;
+  read_ack_13 = 0;
+  read_ack_14 = 0;
+  read_ack_15 = 0;
+end
 
 
-input                   read_req_2;
-input  [26:0]           read_start_addr_2;
-input  [26:0]           read_length_2;
-output                  read_ack_2;
-
-
-input                   read_req_3;
-input  [26:0]           read_start_addr_3;
-input  [26:0]           read_length_3;
-output                  read_ack_3;
-
-
-input                   read_req_4;
-input  [26:0]           read_start_addr_4;
-input  [26:0]           read_length_4;
-output                  read_ack_4;
-
-
-input                   read_req_5;
-input  [26:0]           read_start_addr_5;
-input  [26:0]           read_length_5;
-output                  read_ack_5;
-
-
-input                   read_req_6;
-input  [26:0]           read_start_addr_6;
-input  [26:0]           read_length_6;
-output                  read_ack_6;
-
-
-input                   read_req_7;
-input  [26:0]           read_start_addr_7;
-input  [26:0]           read_length_7;
-output                  read_ack_7;
-
-
-input                   read_req_8;
-input  [26:0]           read_start_addr_8;
-input  [26:0]           read_length_8;
-output                  read_ack_8;
-
-
-input                   read_req_9;
-input  [26:0]           read_start_addr_9;
-input  [26:0]           read_length_9;
-output                  read_ack_9;
-
-
-input                   read_req_10;
-input  [26:0]           read_start_addr_10;
-input  [26:0]           read_length_10;
-output                  read_ack_10;
-
-
-input                   read_req_11;
-input  [26:0]           read_start_addr_11;
-input  [26:0]           read_length_11;
-output                  read_ack_11;
-
-
-input                   read_req_12;
-input  [26:0]           read_start_addr_12;
-input  [26:0]           read_length_12;
-output                  read_ack_12;
-
-
-input                   read_req_13;
-input  [26:0]           read_start_addr_13;
-input  [26:0]           read_length_13;
-output                  read_ack_13;
-
-
-input                   read_req_14;
-input  [26:0]           read_start_addr_14;
-input  [26:0]           read_length_14;
-output                  read_ack_14;
-
-
-input                   read_req_15;
-input  [26:0]           read_start_addr_15;
-input  [26:0]           read_length_15;
-output                  read_ack_15;
-
-
-
-reg		[511:0]         dout;
-reg		[15:0]			dout_en;
-reg						dout_eop;
-
-
-(*mark_debug = "true"*)reg      read_ack_0;
-(*mark_debug = "true"*)reg      read_ack_1;
-(*mark_debug = "true"*)reg      read_ack_2;
-(*mark_debug = "true"*)reg      read_ack_3;
-(*mark_debug = "true"*)reg      read_ack_4;
-(*mark_debug = "true"*)reg      read_ack_5;
-(*mark_debug = "true"*)reg      read_ack_6;
-(*mark_debug = "true"*)reg      read_ack_7;
-(*mark_debug = "true"*)reg      read_ack_8;
-(*mark_debug = "true"*)reg      read_ack_9;
-(*mark_debug = "true"*)reg      read_ack_10;
-(*mark_debug = "true"*)reg      read_ack_11;
-(*mark_debug = "true"*)reg      read_ack_12;
-(*mark_debug = "true"*)reg      read_ack_13;
-(*mark_debug = "true"*)reg      read_ack_14;
-(*mark_debug = "true"*)reg      read_ack_15;
 
 
 // arbiter
@@ -295,7 +208,6 @@ always @ (posedge clk)
 
 assign double_read_req  = {read_req,read_req};  
 
- 
 
 always @ (posedge clk)
 begin
@@ -391,7 +303,7 @@ begin
 		read_ack_keep	<= read_ack_reg;
 end
 
-assign	ddr_read	= read_init;
+//assign	ddr_read	= read_init;
 
 
 always @ (posedge clk)
@@ -424,57 +336,143 @@ begin
 end
 
 
-
 reg						read_credit_val;
-wire					ddr_read_addr_fifo_afull;
-wire					ddr_read_addr_fifo_empty;
-
+// wire					ddr_read_addr_fifo_afull;
+// wire					ddr_read_addr_fifo_empty;
 
 assign	read_done			= ddr_read_addr_send & (~|read_left [26:1]) & read_left [0];
-assign	ddr_read_addr_send	= ~ddr_read_addr_fifo_afull & read_en;
+assign	ddr_read_addr_send	= read_en ; // & ~ddr_read_addr_fifo_afull;
+
+// ddr_read_addr_fifo	ddr_read_addr_fifo
+// (
+// 	.rst(rst),
+// 	.wr_clk(clk),
+// 	.wr_en(ddr_read_addr_send),
+// 	.din(read_addr [29:3]),
+
+// 	.rd_clk(ddr_clk),
+// 	.rd_en(app_en),
+// 	.dout(app_addr [29:3]),
+
+// 	.full(),
+// 	.empty(ddr_read_addr_fifo_empty),
+// 	.prog_full(ddr_read_addr_fifo_afull)
+// );
+
+// Cross clock domain
+reg         read_init_q, read_init_q2;
+reg         read_init_rise = 0;
+reg [31:0]  read_length_q, read_length_q2;
+reg [31:0]  read_start_addr_q, read_start_addr_q2;
+
+always @(posedge ddr_clk)
+begin
+  read_init_q <= read_init;
+  read_init_q2 <= read_init_q;
+  read_init_rise <= read_init_q && ~read_init_q2;
+  read_length_q <= read_length;
+  read_length_q2 <= read_length_q;
+  read_start_addr_q <= read_start_addr;
+  read_start_addr_q2 <= read_start_addr_q;
+end
+
+// Read address channel
+assign m_axi_arid = 0;
+assign m_axi_arprot = 0;
+assign m_axi_arqos = 0;
+assign m_axi_arlock = 0;
+assign m_axi_arburst = 2'b01; // INCR burst mode
+assign m_axi_arcache = 4'b0010;
+assign m_axi_aruser = 1'b1;
+assign m_axi_arsize = 3'b110; // 64bytes burst, 1 beat on 512b width bus
+
+// Count the number of burst needs to initate
+integer       burst_left = 0;
+reg           burst_read_active = 1'b0;
+reg           start_single_burst_read = 1'b0;
+
+always @(posedge ddr_clk)
+begin
+  if (~axi_aresetn)
+    begin
+      burst_left <= 0;
+    end
+  else if (read_init_rise && (burst_left == 0))
+    begin
+      burst_left <= read_length_q2;
+    end
+  else if (start_single_burst_read)
+    burst_left <= burst_left - 1;
+  else
+    burst_left <= burst_left;
+end
 
 
-/*
-SYNC_FIFO_WRAPPER # (9, 27, 480)	ddr_read_addr_fifo
-(
-	.reset_i(rst),
-	.clk_i(clk),
-	.w_en_i(ddr_read_addr_send),
-	.w_din_i(read_addr [29:3]),
+// burst_read_active remains asserted 
+// until the burst write is accepted by the slave
+always @(posedge ddr_clk)
+begin
+  if (~axi_aresetn || read_init_rise)
+    burst_read_active <= 1'b0;
+  else if (start_single_burst_read)
+    burst_read_active <= 1'b1;
+  else if (m_axi_rvalid && m_axi_rready && m_axi_rlast)
+    burst_read_active <= 1'b0;
+end
 
-	.r_en_i(app_en),
-	.r_dout_o(app_addr [29:3]),
+// Generate start_single_burst_read pulse
+always @(posedge ddr_clk)
+begin
+  if (~axi_aresetn)
+    start_single_burst_read <= 1'b0;
+  else if (~m_axi_arvalid && ~start_single_burst_read &&
+           ~burst_read_active && (burst_left != 0))
+    start_single_burst_read <= 1'b1;
+  else
+    start_single_burst_read <= 1'b0;
+end
 
-	.full_o(),
-	.afull_o(ddr_read_addr_fifo_afull),
-	.empty_o(ddr_read_addr_fifo_empty)
-);
-*/
+reg int_axi_arvalid = 1'b0;
 
-ddr_read_addr_fifo	ddr_read_addr_fifo
-(
-	.rst(rst),
-	.wr_clk(clk),
-	.wr_en(ddr_read_addr_send),
-	.din(read_addr [29:3]),
+always @(posedge ddr_clk)                                 
+begin                                                                                                         
+  if (~axi_aresetn || read_init_rise)                                         
+    begin                                                          
+      int_axi_arvalid <= 1'b0;                                         
+    end                                                            
+  // If previously not valid , start next transaction              
+  else if (~int_axi_arvalid && start_single_burst_read)                
+    begin                                                          
+      int_axi_arvalid <= 1'b1;                                         
+    end                                                            
+  else if (m_axi_arready && m_axi_arvalid)                           
+    begin                                                          
+      int_axi_arvalid <= 1'b0;                                         
+    end                                                            
+  else                                                             
+    int_axi_arvalid <= int_axi_arvalid;                                    
+end
 
-	.rd_clk(ddr_clk),
-	.rd_en(app_en),
-	.dout(app_addr [29:3]),
+assign m_axi_arvalid = int_axi_arvalid & read_credit_val;
 
-	.full(),
-	.empty(ddr_read_addr_fifo_empty),
-	.prog_full(ddr_read_addr_fifo_afull)
-);
+always @(posedge ddr_clk)                                         
+begin                                                                
+  if (~axi_aresetn)                                                                                                    
+    m_axi_araddr <= 0;                                             
+  else if (read_init_rise)
+    m_axi_araddr <= {read_start_addr_q2, 6'b0};   // 64B address to 1B address                                                         
+  else if (m_axi_arready && m_axi_arvalid)                                                                                       
+    m_axi_araddr <= m_axi_araddr + C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;                                                                               
+  else                                                               
+    m_axi_araddr <= m_axi_araddr;                                        
+end
 
+always @(posedge ddr_clk)
+begin
+    m_axi_arlen <= C_M_AXI_BURST_LEN - 1;   
+end
 
-
-assign	app_en			= app_rdy & (~ddr_read_addr_fifo_empty) & read_credit_val;
-assign	app_addr [2:0]	= 3'h0;
-assign	app_cmd			= 3'h1;
-
-
-
+// Generate dma interface signals
 wire						ddr_read_data_fifo_rd;
 wire	[511:0]				ddr_read_data_fifo_out;
 wire						ddr_read_data_fifo_empty;
@@ -482,21 +480,7 @@ wire						ddr_read_sync_fifo_empty;
 wire						last_read_dly;
 wire	[WIDTH-1:0]			read_ack_dly;
 
-/*
-SYNC_FIFO_WRAPPER # (10, 18, 800)	ddr_read_info_fifo
-(
-	.reset_i(rst),
-	.clk_i(clk),
-	.w_en_i(ddr_read_addr_send),
-	.w_din_i({read_done, read_ack_keep}),
 
-	.r_en_i(ddr_read_data_fifo_rd),
-	.r_dout_o({last_read_dly, read_ack_dly}),
-
-	.full_o(),
-	.empty_o()
-);
-*/
 ddr_read_info_fifo	ddr_read_info_fifo
 (
 	.rst(rst),
@@ -511,40 +495,25 @@ ddr_read_info_fifo	ddr_read_info_fifo
 	.empty()
 );
 
-
-
-
 assign	ddr_read_data_fifo_rd	= ~ddr_read_data_fifo_empty & dout_rdy;
-/*
-SYNC_FIFO_WRAPPER # (9, 512, 400)	ddr_read_data_fifo
-(
-	.reset_i(rst),
-	.clk_i(clk),
-	.w_en_i(app_rd_data_valid),
-	.w_din_i(app_rd_data),
 
-	.r_en_i(ddr_read_data_fifo_rd),
-	.r_dout_o(ddr_read_data_fifo_out),
-
-	.full_o(),
-	.empty_o(ddr_read_data_fifo_empty)
-);
-*/
+wire  ddr_read_data_fifo_full;
 ddr_read_data_fifo	ddr_read_data_fifo
 (
 	.rst(rst),
 	.wr_clk(ddr_clk),
-	.wr_en(app_rd_data_valid),
-	.din(app_rd_data),
+	.wr_en(m_axi_rvalid & ~rst),
+	.din(m_axi_rdata),
 
 	.rd_clk(clk),
 	.rd_en(ddr_read_data_fifo_rd),
 	.dout(ddr_read_data_fifo_out),
 
-	.full(),
+	.full(ddr_read_data_fifo_full),
 	.empty(ddr_read_data_fifo_empty)
 );
 
+assign  m_axi_rready = ~ddr_read_data_fifo_full;
 
 always @ (posedge clk)
 begin
@@ -554,7 +523,7 @@ begin
 end
 
 
-
+// What is this fifo used for ??
 wire					ddr_read_sync_fifo_rd;
 
 ASYNC_FIFO_WRAPPER # (3, 1) ddr_read_sync_fifo
@@ -572,9 +541,9 @@ ASYNC_FIFO_WRAPPER # (3, 1) ddr_read_sync_fifo
     .r_empty_o(ddr_read_sync_fifo_empty)
 );
 
-
-
+wire ddr_read_en;
 assign	ddr_read_sync_fifo_rd = ~ddr_read_sync_fifo_empty;
+assign	ddr_read_en = m_axi_arready & m_axi_arvalid;
 
 reg		[8:0]		read_credit;
 
@@ -586,8 +555,7 @@ begin
 	if (rst)
 		read_credit	<= 500;
 	else
-		read_credit	<= read_credit + ddr_read_sync_fifo_rd - app_en;
+		read_credit	<= read_credit + ddr_read_sync_fifo_rd - ddr_read_en;
 end
-
 
 endmodule

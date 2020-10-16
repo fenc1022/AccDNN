@@ -1,254 +1,159 @@
-module ddr3_dma_engineer
-(
-  clk,
-  ddr_clk,
-  rst,
-  //write_dma Interface
-  write_req,
-  write_start_addr,
-  write_length,
-  write_done,
-  din,
-  din_rdy,
-  din_en,
-  din_eop,
-  //read_dma Interface
-  dout_rdy,
-  dout,
-  dout_en,
-  dout_eop,
-  
-  read_req_0,
-  read_start_addr_0,
-  read_length_0,
-  read_ack_0,  
-  
-  read_req_1,
-  read_start_addr_1,
-  read_length_1,
-  read_ack_1,  
-  
-  read_req_2,
-  read_start_addr_2,
-  read_length_2,
-  read_ack_2, 
-  
-  read_req_3,
-  read_start_addr_3,
-  read_length_3,
-  read_ack_3,  
-  
-  read_req_4,
-  read_start_addr_4,
-  read_length_4,
-  read_ack_4, 
-  
-  read_req_5,
-  read_start_addr_5,
-  read_length_5,
-  read_ack_5,
-  
-  read_req_6,
-  read_start_addr_6,
-  read_length_6,
-  read_ack_6,
-  
-  read_req_7,
-  read_start_addr_7,
-  read_length_7,
-  read_ack_7, 
-  
-  read_req_8,
-  read_start_addr_8,
-  read_length_8,
-  read_ack_8, 
-  
-  read_req_9,
-  read_start_addr_9,
-  read_length_9,
-  read_ack_9,  
-  
-  read_req_10,
-  read_start_addr_10,
-  read_length_10,
-  read_ack_10,
-  
-  read_req_11,
-  read_start_addr_11,
-  read_length_11,
-  read_ack_11,
-  
-  read_req_12,
-  read_start_addr_12,
-  read_length_12,
-  read_ack_12, 
-  
-  read_req_13,
-  read_start_addr_13,
-  read_length_13,
-  read_ack_13,
-  
-  read_req_14,
-  read_start_addr_14,
-  read_length_14,
-  read_ack_14, 
-  
-  read_req_15,
-  read_start_addr_15,
-  read_length_15,
-  read_ack_15, 
- //ddr3 Interface
-  init_calib_complete,
-  app_addr,
-  app_cmd,
-  app_rdy,
-  app_en,
-  app_rd_data,
-  app_rd_data_end,
-  app_rd_data_valid,
-  app_wdf_data,
-  app_wdf_rdy,  
-  app_wdf_wren,
-  app_wdf_end
-);
+`define C_M_AXI_ADDR_WIDTH 32
 
-input                   clk;
-input					ddr_clk;
-input                   rst;
+module ddr3_dma_engineer #(
+  parameter C_S_AXI_ID_WIDTH = 4,
+  parameter integer C_BURST_LEN = 16,
+  parameter integer C_M_AXI_DATA_WIDTH = 512
+) (
+input                   clk,
+input					ddr_clk,
+input                   rst,
 //write_dma Interface
-input                   write_req;
-input  [26:0]           write_start_addr;
-input  [26:0]           write_length;
-output                  write_done;
-input  [511:0]          din;
-output                  din_rdy;
-input                   din_en;
-input                   din_eop;
+input                   write_req,
+input  [26:0]           write_start_addr,
+input  [26:0]           write_length,
+output                  write_done,
+input  [511:0]          din,
+output                  din_rdy,
+input                   din_en,
+input                   din_eop,
 
 //read_dma Interface
-input                   dout_rdy;
-output     [511:0]      dout;
-output     [15:0]       dout_en;
-output                  dout_eop;      
+input                   dout_rdy,
+output     [511:0]      dout,
+output     [15:0]       dout_en,
+output                  dout_eop,      
 
-input                   read_req_0;
-input  [26:0]           read_start_addr_0;
-input  [26:0]           read_length_0;
-output                  read_ack_0;
+input                   read_req_0,
+input  [26:0]           read_start_addr_0,
+input  [26:0]           read_length_0,
+output                  read_ack_0,
 
+input                   read_req_1,
+input  [26:0]           read_start_addr_1,
+input  [26:0]           read_length_1,
+output                  read_ack_1,
+input                   read_req_2,
+input  [26:0]           read_start_addr_2,
+input  [26:0]           read_length_2,
+output                  read_ack_2,
 
-input                   read_req_1;
-input  [26:0]           read_start_addr_1;
-input  [26:0]           read_length_1;
-output                  read_ack_1;
+input                   read_req_3,
+input  [26:0]           read_start_addr_3,
+input  [26:0]           read_length_3,
+output                  read_ack_3,
 
+input                   read_req_4,
+input  [26:0]           read_start_addr_4,
+input  [26:0]           read_length_4,
+output                  read_ack_4,
 
-input                   read_req_2;
-input  [26:0]           read_start_addr_2;
-input  [26:0]           read_length_2;
-output                  read_ack_2;
+input                   read_req_5,
+input  [26:0]           read_start_addr_5,
+input  [26:0]           read_length_5,
+output                  read_ack_5,
 
+input                   read_req_6,
+input  [26:0]           read_start_addr_6,
+input  [26:0]           read_length_6,
+output                  read_ack_6,
 
-input                   read_req_3;
-input  [26:0]           read_start_addr_3;
-input  [26:0]           read_length_3;
-output                  read_ack_3;
+input                   read_req_7,
+input  [26:0]           read_start_addr_7,
+input  [26:0]           read_length_7,
+output                  read_ack_7,
 
+input                   read_req_8,
+input  [26:0]           read_start_addr_8,
+input  [26:0]           read_length_8,
+output                  read_ack_8,
 
-input                   read_req_4;
-input  [26:0]           read_start_addr_4;
-input  [26:0]           read_length_4;
-output                  read_ack_4;
+input                   read_req_9,
+input  [26:0]           read_start_addr_9,
+input  [26:0]           read_length_9,
+output                  read_ack_9,
 
+input                   read_req_10,
+input  [26:0]           read_start_addr_10,
+input  [26:0]           read_length_10,
+output                  read_ack_10,
 
-input                   read_req_5;
-input  [26:0]           read_start_addr_5;
-input  [26:0]           read_length_5;
-output                  read_ack_5;
+input                   read_req_11,
+input  [26:0]           read_start_addr_11,
+input  [26:0]           read_length_11,
+output                  read_ack_11,
 
+input                   read_req_12,
+input  [26:0]           read_start_addr_12,
+input  [26:0]           read_length_12,
+output                  read_ack_12,
 
-input                   read_req_6;
-input  [26:0]           read_start_addr_6;
-input  [26:0]           read_length_6;
-output                  read_ack_6;
+input                   read_req_13,
+input  [26:0]           read_start_addr_13,
+input  [26:0]           read_length_13,
+output                  read_ack_13,
 
+input                   read_req_14,
+input  [26:0]           read_start_addr_14,
+input  [26:0]           read_length_14,
+output                  read_ack_14,
 
-input                   read_req_7;
-input  [26:0]           read_start_addr_7;
-input  [26:0]           read_length_7;
-output                  read_ack_7;
+input                   read_req_15,
+input  [26:0]           read_start_addr_15,
+input  [26:0]           read_length_15,
+output                  read_ack_15,
 
-
-input                   read_req_8;
-input  [26:0]           read_start_addr_8;
-input  [26:0]           read_length_8;
-output                  read_ack_8;
-
-
-input                   read_req_9;
-input  [26:0]           read_start_addr_9;
-input  [26:0]           read_length_9;
-output                  read_ack_9;
-
-
-input                   read_req_10;
-input  [26:0]           read_start_addr_10;
-input  [26:0]           read_length_10;
-output                  read_ack_10;
-
-
-input                   read_req_11;
-input  [26:0]           read_start_addr_11;
-input  [26:0]           read_length_11;
-output                  read_ack_11;
-
-
-input                   read_req_12;
-input  [26:0]           read_start_addr_12;
-input  [26:0]           read_length_12;
-output                  read_ack_12;
-
-
-input                   read_req_13;
-input  [26:0]           read_start_addr_13;
-input  [26:0]           read_length_13;
-output                  read_ack_13;
-
-
-input                   read_req_14;
-input  [26:0]           read_start_addr_14;
-input  [26:0]           read_length_14;
-output                  read_ack_14;
-
-
-input                   read_req_15;
-input  [26:0]           read_start_addr_15;
-input  [26:0]           read_length_15;
-output                  read_ack_15;
-
-//ddr3 Interface
-input                   init_calib_complete;
-output  [29:0]		    app_addr;
-output  [2:0]		    app_cmd;
-input		     	    app_rdy;
-output                  app_en;
-input  [511:0]          app_rd_data;
-input                   app_rd_data_end;
-input                   app_rd_data_valid;
-                        
-output [511:0]          app_wdf_data;
-input			        app_wdf_rdy;  
-output			        app_wdf_wren;
-output			        app_wdf_end;
-                        
-                        
-wire [29:0]		        write_app_addr;
-wire [2:0]		        write_app_cmd;
-wire                    write_app_en;
-wire                    read_req;
-wire [29:0]		        read_app_addr;
-wire [2:0]		        read_app_cmd;
-wire                    read_app_en;
+// ddr3 axi master Interface
+input                   init_calib_complete,
+input                   axi_aresetn,
+// axi write address
+output  [`C_M_AXI_ADDR_WIDTH-1:0]       m_axi_awaddr,
+output  [7:0]                           m_axi_awlen,
+output  [2:0]                           m_axi_awsize,
+output  [1:0]                           m_axi_awburst,
+output  [3:0]                           m_axi_awcache,
+output                                  m_axi_awvalid,
+input                                   m_axi_awready,
+output  [C_S_AXI_ID_WIDTH-1:0]          m_axi_awid,
+output                                  m_axi_awlock,
+output  [2:0]                           m_axi_awprot,
+output  [3:0]                           m_axi_awqos,
+output                                  m_axi_awuser,
+// axi write data
+output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
+output  [C_M_AXI_DATA_WIDTH/8-1:0]      m_axi_wstrb,
+output                                  m_axi_wlast,
+output                                  m_axi_wvalid,
+input                                   m_axi_wready,
+output                                  m_axi_wuser,
+// axi write response
+input   [1:0]                           m_axi_bresp,
+input                                   m_axi_bvalid,
+output                                  m_axi_bready,
+input   [C_S_AXI_ID_WIDTH-1:0]          m_axi_bid,
+input                                   m_axi_buser,
+// axi read address
+output  [`C_M_AXI_ADDR_WIDTH-1:0]       m_axi_araddr,
+output  [7:0]                           m_axi_arlen,
+output  [2:0]                           m_axi_arsize,
+output  [1:0]                           m_axi_arburst,
+output  [3:0]                           m_axi_arcache,
+output                                  m_axi_arvalid,
+input                                   m_axi_arready,
+output  [C_S_AXI_ID_WIDTH:0]            m_axi_arid,
+output                                  m_axi_arlock,
+output  [2:0]                           m_axi_arprot,
+output  [3:0]                           m_axi_arqos,
+output  [0:0]                           m_axi_aruser,
+// axi read data
+input   [C_M_AXI_DATA_WIDTH-1:0]        m_axi_rdata,
+input   [1:0]                           m_axi_rresp,
+input                                   m_axi_rlast,
+input                                   m_axi_rvalid,
+output                                  m_axi_rready,
+input   [C_S_AXI_ID_WIDTH:0]            m_axi_rid,
+input   [0:0]                           m_axi_ruser
+);
 
 ddr3_dma_write  u_ddr3_dma_write 
 (
@@ -256,8 +161,6 @@ ddr3_dma_write  u_ddr3_dma_write
     .ddr_clk                 ( ddr_clk              ),
     .rst                     ( rst                  ),
     .init_calib_complete     ( init_calib_complete  ),
-    .app_rdy                 ( app_rdy              ),
-    .app_wdf_rdy             ( app_wdf_rdy          ),
     .write_req               ( write_req            ),
     .write_start_addr        ( write_start_addr     ),
     .write_length            ( write_length         ),
@@ -265,27 +168,40 @@ ddr3_dma_write  u_ddr3_dma_write
     .din                     ( din                  ),
     .din_en                  ( din_en               ),
     .din_eop                 ( din_eop              ),
-
-    .app_addr                ( write_app_addr       ),
-    .app_cmd                 ( write_app_cmd        ),
-    .app_en                  ( write_app_en         ),
-    .app_wdf_data            ( app_wdf_data         ),
-    .app_wdf_wren            ( app_wdf_wren         ),
-    .app_wdf_end             ( app_wdf_end          ),
-    .din_rdy                 ( din_rdy              )
+    .din_rdy                 ( din_rdy              ),
+    .axi_aresetn             ( axi_aresetn        ),
+    .m_axi_awaddr            ( m_axi_awaddr         ),
+    .m_axi_awlen             ( m_axi_awlen          ),
+    .m_axi_awsize            ( m_axi_awsize         ),
+    .m_axi_awburst           ( m_axi_awburst        ),
+    .m_axi_awcache           ( m_axi_awcache        ),
+    .m_axi_awvalid           ( m_axi_awvalid        ),
+    .m_axi_awready           ( m_axi_awready        ),
+    .m_axi_awid              ( m_axi_awid           ),
+    .m_axi_awlock            ( m_axi_awlock         ),
+    .m_axi_awprot            ( m_axi_awprot         ),
+    .m_axi_awqos             ( m_axi_awqos          ),
+    .m_axi_awuser            ( m_axi_awuser         ),
+    .m_axi_wdata             ( m_axi_wdata          ),
+    .m_axi_wstrb             ( m_axi_wstrb          ),
+    .m_axi_wlast             ( m_axi_wlast          ),
+    .m_axi_wvalid            ( m_axi_wvalid         ),
+    .m_axi_wready            ( m_axi_wready         ),
+    .m_axi_wuser             ( m_axi_wuser          ),
+    .m_axi_bresp             ( m_axi_bresp          ),
+    .m_axi_bvalid            ( m_axi_bvalid         ),
+    .m_axi_bready            ( m_axi_bready         ),
+    .m_axi_bid               ( m_axi_bid            ),
+    .m_axi_buser             ( m_axi_buser          )
 );
-
 
 ddr3_dma_read   u_ddr3_dma_read 
 (
     .clk                     ( clk                  ),
     .ddr_clk                 ( ddr_clk              ),
     .rst                     ( rst                  ),
+    .axi_aresetn             ( axi_aresetn          ),
     .init_calib_complete     ( init_calib_complete  ),
-    .app_rdy                 ( app_rdy              ),
-    .app_rd_data             ( app_rd_data          ),
-    .app_rd_data_end         ( app_rd_data_end      ),
-    .app_rd_data_valid       ( app_rd_data_valid    ),
     .read_req_0              ( read_req_0           ),
     .read_start_addr_0       ( read_start_addr_0    ),
     .read_length_0           ( read_length_0        ),
@@ -334,11 +250,6 @@ ddr3_dma_read   u_ddr3_dma_read
     .read_req_15             ( read_req_15          ),
     .read_start_addr_15      ( read_start_addr_15   ),
     .read_length_15          ( read_length_15       ),
-
-    .app_addr                ( read_app_addr        ),
-    .app_cmd                 ( read_app_cmd         ),
-    .app_en                  ( read_app_en          ),
-    .ddr_read                ( read_req             ),
     .dout_rdy                ( dout_rdy             ),
     .dout                    ( dout                 ),
     .dout_en                 ( dout_en              ),
@@ -358,27 +269,26 @@ ddr3_dma_read   u_ddr3_dma_read
     .read_ack_12             ( read_ack_12          ),
     .read_ack_13             ( read_ack_13          ),
     .read_ack_14             ( read_ack_14          ),
-    .read_ack_15             ( read_ack_15          )
-);
-
-ddr3_dma_mux  u_ddr3_dma_mux 
-(
-    .clk                     ( clk                  ),
-    .rst                     ( rst                  ),
-
-    .write_req               ( write_req            ),
-    .write_app_cmd           ( write_app_cmd        ),
-    .write_app_addr          ( write_app_addr       ),
-    .write_app_en            ( write_app_en         ),
-
-    .read_req                ( read_req             ),
-    .read_app_cmd            ( read_app_cmd         ),
-    .read_app_addr           ( read_app_addr        ),
-    .read_app_en             ( read_app_en          ),
-                                                    
-    .app_cmd                 ( app_cmd              ),
-    .app_addr                ( app_addr             ),
-    .app_en                  ( app_en               )
+    .read_ack_15             ( read_ack_15          ),
+    .m_axi_araddr            ( m_axi_araddr         ),
+    .m_axi_arlen             ( m_axi_arlen          ),
+    .m_axi_arsize            ( m_axi_arsize         ),
+    .m_axi_arburst           ( m_axi_arburst        ),
+    .m_axi_arcache           ( m_axi_arcache        ),
+    .m_axi_arvalid           ( m_axi_arvalid        ),
+    .m_axi_arready           ( m_axi_arready        ),
+    .m_axi_arid              ( m_axi_arid           ),
+    .m_axi_arlock            ( m_axi_arlock         ),
+    .m_axi_arprot            ( m_axi_arprot         ),
+    .m_axi_arqos             ( m_axi_arqos          ),
+    .m_axi_aruser            ( m_axi_aruser         ),
+    .m_axi_rdata             ( m_axi_rdata          ),
+    .m_axi_rresp             ( m_axi_rresp          ),
+    .m_axi_rlast             ( m_axi_rlast          ),
+    .m_axi_rvalid            ( m_axi_rvalid         ),
+    .m_axi_rready            ( m_axi_rready         ),
+    .m_axi_rid               ( m_axi_rid            ),
+    .m_axi_ruser             ( m_axi_ruser          )
 );
 
 endmodule

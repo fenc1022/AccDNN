@@ -11,7 +11,8 @@ proc comp_model {} {
 	vlog ../src/*.v \
          ../src/*.sv \
 		 ../lib/ddr3_dma/*.v \
-         ../lib/ddr_mode.sv \
+         ../lib/ddr_axi/*.v \
+         ../lib/ddr_axi/*.sv \
 		-time
 	     
 	exec vmake > makefile.tb

@@ -1,5 +1,8 @@
 
-module top_dma_ddr
+module top_dma_ddr #
+(
+    parameter C_AXI_ID_WIDTH = 4
+)
 (
   //write_dma Interface
   write_req,
@@ -216,58 +219,101 @@ input                   clk;
 input                   rst;
 input                   ddr_rst;
   
-wire                                  ddr_clk;
-wire [29:0]                           app_addr;
-wire [2:0]                            app_cmd;
-wire                                  app_en;
-wire                                  app_rdy;
-wire [511:0]                          app_rd_data;
-wire                                  app_rd_data_end;
-wire                                  app_rd_data_valid;
-wire [511:0]                          app_wdf_data;
-wire                                  app_wdf_wren;
-wire                                  app_wdf_end;
-wire                                  app_wdf_rdy;
-wire [63:0]                           app_wdf_mask;
+  wire                                  ddr_clk;
 
-/*
-assign  app_wdf_mask = 64'b0;
-ddr3_sim_top  u_ddr3_sim_top
-(
-.init_calib_complete (init_calib_complete),
-.app_addr            (app_addr),
-.app_cmd             (app_cmd),
-.app_en              (app_en),
-.app_wdf_data        (app_wdf_data),
-.app_wdf_end         (app_wdf_end),
-.app_wdf_wren        (app_wdf_wren),
-.app_rd_data         (app_rd_data),
-.app_rd_data_end     (app_rd_data_end),
-.app_rd_data_valid   (app_rd_data_valid),
-.app_rdy             (app_rdy),
-.app_wdf_rdy         (app_wdf_rdy),
-.clk                 (clk),    
-.rst                 (rst),
-.app_wdf_mask        (app_wdf_mask)
-);
-*/
+  // Slave Interface Write Address Ports
+  wire [C_AXI_ID_WIDTH-1:0]        c0_ddr4_s_axi_awid;
+  wire [31:0]                      c0_ddr4_s_axi_awaddr;
+  wire [7:0]                       c0_ddr4_s_axi_awlen;
+  wire [2:0]                       c0_ddr4_s_axi_awsize;
+  wire [1:0]                       c0_ddr4_s_axi_awburst;
+  wire [3:0]                       c0_ddr4_s_axi_awcache;
+  wire [2:0]                       c0_ddr4_s_axi_awprot;
+  wire                             c0_ddr4_s_axi_awvalid;
+  wire                             c0_ddr4_s_axi_awready;
+   // Slave Interface Write Data Ports
+  wire [511:0]                     c0_ddr4_s_axi_wdata;
+  wire [63:0]                      c0_ddr4_s_axi_wstrb;
+  wire                             c0_ddr4_s_axi_wlast;
+  wire                             c0_ddr4_s_axi_wvalid;
+  wire                             c0_ddr4_s_axi_wready;
+   // Slave Interface Write Response Ports
+  wire                             c0_ddr4_s_axi_bready;
+  wire [C_AXI_ID_WIDTH-1:0]        c0_ddr4_s_axi_bid;
+  wire [1:0]                       c0_ddr4_s_axi_bresp;
+  wire                             c0_ddr4_s_axi_bvalid;
+   // Slave Interface Read Address Ports
+  wire [C_AXI_ID_WIDTH-1:0]        c0_ddr4_s_axi_arid;
+  wire [31:0]                      c0_ddr4_s_axi_araddr;
+  wire [7:0]                       c0_ddr4_s_axi_arlen;
+  wire [2:0]                       c0_ddr4_s_axi_arsize;
+  wire [1:0]                       c0_ddr4_s_axi_arburst;
+  wire [3:0]                       c0_ddr4_s_axi_arcache;
+  wire                             c0_ddr4_s_axi_arvalid;
+  wire                             c0_ddr4_s_axi_arready;
+   // Slave Interface Read Data Ports
+  wire                             c0_ddr4_s_axi_rready;
+  wire [C_AXI_ID_WIDTH:0]          c0_ddr4_s_axi_rid;
+  wire [511:0]                     c0_ddr4_s_axi_rdata;
+  wire [1:0]                       c0_ddr4_s_axi_rresp;
+  wire                             c0_ddr4_s_axi_rlast;
+  wire                             c0_ddr4_s_axi_rvalid;
 
-ddr_mode  u_ddr3_sim_top
+// reset axi interface after ddr_clk runs
+reg ddr4_aresetn = 1'b0;
+always @(posedge ddr_clk)
+begin
+    ddr4_aresetn <= init_calib_complete;
+end
+
+ddr_mode_axi  u_ddr3_sim_top
 (
-.init_done           (init_calib_complete),
-.app_addr            (app_addr),
-.app_cmd             (app_cmd),
-.app_en              (app_en),
-.app_wdf_data        (app_wdf_data),
-.app_wdf_end         (app_wdf_end),
-.app_wdf_wren        (app_wdf_wren),
-.app_rd_data         (app_rd_data),
-.app_rd_data_end     (app_rd_data_end),
-.app_rd_data_valid   (app_rd_data_valid),
-.app_rdy             (app_rdy),
-.app_wdf_rdy         (app_wdf_rdy),
-.clk_ddr             (ddr_clk),
-.reset               (ddr_rst)
+  .c0_init_calib_complete              (init_calib_complete),
+  .c0_ddr4_ui_clk                      (ddr_clk),
+  .sys_rst                             (ddr_rst),
+  // Slave Interface Write Address Ports
+  .c0_ddr4_aresetn                     (ddr4_aresetn),
+  .c0_ddr4_s_axi_awid                  (c0_ddr4_s_axi_awid),
+  .c0_ddr4_s_axi_awaddr                (c0_ddr4_s_axi_awaddr),
+  .c0_ddr4_s_axi_awlen                 (c0_ddr4_s_axi_awlen),
+  .c0_ddr4_s_axi_awsize                (c0_ddr4_s_axi_awsize),
+  .c0_ddr4_s_axi_awburst               (c0_ddr4_s_axi_awburst),
+  .c0_ddr4_s_axi_awlock                (1'b0),
+  .c0_ddr4_s_axi_awcache               (c0_ddr4_s_axi_awcache),
+  .c0_ddr4_s_axi_awprot                (c0_ddr4_s_axi_awprot),
+  .c0_ddr4_s_axi_awqos                 (4'b0),
+  .c0_ddr4_s_axi_awvalid               (c0_ddr4_s_axi_awvalid),
+  .c0_ddr4_s_axi_awready               (c0_ddr4_s_axi_awready),
+  // Slave Interface Write Data Ports
+  .c0_ddr4_s_axi_wdata                 (c0_ddr4_s_axi_wdata),
+  .c0_ddr4_s_axi_wstrb                 (c0_ddr4_s_axi_wstrb),
+  .c0_ddr4_s_axi_wlast                 (c0_ddr4_s_axi_wlast),
+  .c0_ddr4_s_axi_wvalid                (c0_ddr4_s_axi_wvalid),
+  .c0_ddr4_s_axi_wready                (c0_ddr4_s_axi_wready),
+  // Slave Interface Write Response Ports
+  .c0_ddr4_s_axi_bid                   (c0_ddr4_s_axi_bid),
+  .c0_ddr4_s_axi_bresp                 (c0_ddr4_s_axi_bresp),
+  .c0_ddr4_s_axi_bvalid                (c0_ddr4_s_axi_bvalid),
+  .c0_ddr4_s_axi_bready                (c0_ddr4_s_axi_bready),
+  // Slave Interface Read Address Ports
+  .c0_ddr4_s_axi_arid                  (c0_ddr4_s_axi_arid),
+  .c0_ddr4_s_axi_araddr                (c0_ddr4_s_axi_araddr),
+  .c0_ddr4_s_axi_arlen                 (c0_ddr4_s_axi_arlen),
+  .c0_ddr4_s_axi_arsize                (c0_ddr4_s_axi_arsize),
+  .c0_ddr4_s_axi_arburst               (c0_ddr4_s_axi_arburst),
+  .c0_ddr4_s_axi_arlock                (1'b0),
+  .c0_ddr4_s_axi_arcache               (c0_ddr4_s_axi_arcache),
+  .c0_ddr4_s_axi_arprot                (3'b0),
+  .c0_ddr4_s_axi_arqos                 (4'b0),
+  .c0_ddr4_s_axi_arvalid               (c0_ddr4_s_axi_arvalid),
+  .c0_ddr4_s_axi_arready               (c0_ddr4_s_axi_arready),
+  // Slave Interface Read Data Ports
+  .c0_ddr4_s_axi_rid                   (c0_ddr4_s_axi_rid),
+  .c0_ddr4_s_axi_rdata                 (c0_ddr4_s_axi_rdata),
+  .c0_ddr4_s_axi_rresp                 (c0_ddr4_s_axi_rresp),
+  .c0_ddr4_s_axi_rlast                 (c0_ddr4_s_axi_rlast),
+  .c0_ddr4_s_axi_rvalid                (c0_ddr4_s_axi_rvalid),
+  .c0_ddr4_s_axi_rready                (c0_ddr4_s_axi_rready)
 );
 
 
@@ -276,12 +322,20 @@ ddr3_dma_engineer  u_ddr3_dma_engineer
     .clk                     ( clk                   ),
     .ddr_clk                 ( ddr_clk               ),
     .rst                     ( rst                   ),
+    .axi_aresetn             ( ~ddr_rst              ),
+    .init_calib_complete     ( init_calib_complete   ),
     .write_req               ( write_req             ),
     .write_start_addr        ( write_start_addr      ),
     .write_length            ( write_length          ),
+    .write_done              ( write_done            ),
     .din                     ( din                   ),
     .din_en                  ( din_en                ),
     .din_eop                 ( din_eop               ),
+    .din_rdy                 ( din_rdy               ),
+    .dout                    ( dout                  ),
+    .dout_en                 ( dout_en               ),
+    .dout_eop                ( dout_eop              ),
+    .dout_rdy                ( 1'b1                  ),
     .read_req_0              ( read_req_0            ),
     .read_start_addr_0       ( read_start_addr_0     ),
     .read_length_0           ( read_length_0         ),
@@ -330,19 +384,6 @@ ddr3_dma_engineer  u_ddr3_dma_engineer
     .read_req_15             ( read_req_15           ),
     .read_start_addr_15      ( read_start_addr_15    ),
     .read_length_15          ( read_length_15        ),
-    .init_calib_complete     ( init_calib_complete   ),
-    .app_rdy                 ( app_rdy               ),
-    .app_rd_data             ( app_rd_data           ),
-    .app_rd_data_end         ( app_rd_data_end       ),
-    .app_rd_data_valid       ( app_rd_data_valid     ),
-    .app_wdf_rdy             ( app_wdf_rdy           ),
-                                                    
-    .write_done              ( write_done            ),
-    .din_rdy                 ( din_rdy               ),
-    .dout_rdy                ( 1'b1                  ),
-    .dout                    ( dout                  ),
-    .dout_en                 ( dout_en               ),
-    .dout_eop                ( dout_eop              ),
     .read_ack_0              ( read_ack_0            ),
     .read_ack_1              ( read_ack_1            ),
     .read_ack_2              ( read_ack_2            ),
@@ -359,12 +400,46 @@ ddr3_dma_engineer  u_ddr3_dma_engineer
     .read_ack_13             ( read_ack_13           ),
     .read_ack_14             ( read_ack_14           ),
     .read_ack_15             ( read_ack_15           ),
-    .app_addr                ( app_addr              ),
-    .app_cmd                 ( app_cmd               ),
-    .app_en                  ( app_en                ),
-    .app_wdf_data            ( app_wdf_data          ),
-    .app_wdf_wren            ( app_wdf_wren          ),
-    .app_wdf_end             ( app_wdf_end           )
+    // Master Interface Write Address Ports
+    .m_axi_awready                     (c0_ddr4_s_axi_awready),
+    .m_axi_awid                        (c0_ddr4_s_axi_awid),
+    .m_axi_awaddr                      (c0_ddr4_s_axi_awaddr),
+    .m_axi_awlen                       (c0_ddr4_s_axi_awlen),
+    .m_axi_awsize                      (c0_ddr4_s_axi_awsize),
+    .m_axi_awburst                     (c0_ddr4_s_axi_awburst),
+    .m_axi_awlock                      (),
+    .m_axi_awcache                     (c0_ddr4_s_axi_awcache),
+    .m_axi_awprot                      (c0_ddr4_s_axi_awprot),
+    .m_axi_awvalid                     (c0_ddr4_s_axi_awvalid),
+    // Master Interface Write Data Ports
+    .m_axi_wready                      (c0_ddr4_s_axi_wready),
+    .m_axi_wdata                       (c0_ddr4_s_axi_wdata),
+    .m_axi_wstrb                       (c0_ddr4_s_axi_wstrb),
+    .m_axi_wlast                       (c0_ddr4_s_axi_wlast),
+    .m_axi_wvalid                      (c0_ddr4_s_axi_wvalid),
+    // Master Interface Write Response Ports
+    .m_axi_bid                         (c0_ddr4_s_axi_bid),
+    .m_axi_bresp                       (c0_ddr4_s_axi_bresp),
+    .m_axi_bvalid                      (c0_ddr4_s_axi_bvalid),
+    .m_axi_bready                      (c0_ddr4_s_axi_bready),
+    // Master Interface Read Address Ports
+    .m_axi_arready                     (c0_ddr4_s_axi_arready),
+    .m_axi_arid                        (c0_ddr4_s_axi_arid),
+    .m_axi_araddr                      (c0_ddr4_s_axi_araddr),
+    .m_axi_arlen                       (c0_ddr4_s_axi_arlen),
+    .m_axi_arsize                      (c0_ddr4_s_axi_arsize),
+    .m_axi_arburst                     (c0_ddr4_s_axi_arburst),
+    .m_axi_arlock                      (),
+    .m_axi_arcache                     (c0_ddr4_s_axi_arcache),
+    .m_axi_arprot                      (),
+    .m_axi_arvalid                     (c0_ddr4_s_axi_arvalid),
+    // Master Interface Read Data Ports
+    .m_axi_rid                         (c0_ddr4_s_axi_rid),
+    .m_axi_rresp                       (c0_ddr4_s_axi_rresp),
+    .m_axi_rvalid                      (c0_ddr4_s_axi_rvalid),
+    .m_axi_rdata                       (c0_ddr4_s_axi_rdata),
+    .m_axi_rlast                       (c0_ddr4_s_axi_rlast),
+    .m_axi_rready                      (c0_ddr4_s_axi_rready)
 );
 
 endmodule
