@@ -17,7 +17,7 @@
 (* NotValidForBitStream *)
 module ddr_read_info_fifo
    (clk,
-    rst,
+    srst,
     din,
     wr_en,
     rd_en,
@@ -25,7 +25,7 @@ module ddr_read_info_fifo
     full,
     empty);
   input clk;
-  input rst;
+  input srst;
   input [16:0]din;
   input wr_en;
   input rd_en;
@@ -40,7 +40,7 @@ module ddr_read_info_fifo
   wire empty;
   wire full;
   wire rd_en;
-  wire rst;
+  wire srst;
   wire wr_en;
   wire NLW_U0_almost_empty_UNCONNECTED;
   wire NLW_U0_almost_full_UNCONNECTED;
@@ -529,7 +529,7 @@ GND GND
         .rd_en(rd_en),
         .rd_rst(\<const0> ),
         .rd_rst_busy(NLW_U0_rd_rst_busy_UNCONNECTED),
-        .rst(rst),
+        .rst(srst),
         .s_aclk(\<const0> ),
         .s_aclk_en(\<const0> ),
         .s_aresetn(\<const0> ),

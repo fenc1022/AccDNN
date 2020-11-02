@@ -12,8 +12,8 @@ input                   rst,
 input                   init_calib_complete,
 input                   axi_aresetn,
 // axi read address
-output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
-output reg [7:0]                        m_axi_arlen,
+output     [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
+output     [7:0]                        m_axi_arlen,
 output     [2:0]                        m_axi_arsize,
 output     [1:0]                        m_axi_arburst,
 output     [3:0]                        m_axi_arcache,
@@ -128,8 +128,6 @@ localparam WIDTH = 16;
 // Initialize registered output
 initial
 begin
-  m_axi_araddr = 0;
-  m_axi_arlen = 8'h0;
   dout = 0;
   dout_en = 0;
   dout_eop = 0;
@@ -255,7 +253,7 @@ begin
   read_ack_15   <= read_ack_reg[15];
 end
 
-
+reg     [DMA_ADDR_WIDTH-1:0]    read_addr; // in 64B uint
 reg     [DMA_ADDR_WIDTH-1:0]    read_length;
 reg     [DMA_ADDR_WIDTH-1:0]    read_start_addr;
 reg					            read_init;
@@ -294,6 +292,14 @@ begin
         read_ack_keep	<= read_ack_reg;
 end
 
+always @ (posedge clk)
+begin
+  if(read_init)
+	read_addr <= read_start_addr;
+  else if (ddr_read_addr_send)
+	read_addr <= read_addr + 1;
+end
+
 // Assuming the read_length is always >= 2
 always @ (posedge clk)
 begin
@@ -314,29 +320,31 @@ begin
 end
 
 reg     read_credit_val;
+wire    ddr_read_addr_fifo_afull;
+wire    ddr_read_addr_fifo_empty;
 
 assign	read_done			= ddr_read_addr_send &
                         (~|read_left [DMA_ADDR_WIDTH-1:1]) &
                         read_left [0];
-assign	ddr_read_addr_send	= read_en ; // & ~ddr_read_addr_fifo_afull;
+assign	ddr_read_addr_send	= ~ddr_read_addr_fifo_afull & read_en;
 
+ddr_read_addr_fifo	ddr_read_addr_fifo
+(
+	.srst(rst),
+	.wr_clk(clk),
+	.wr_en(ddr_read_addr_send),
+	.din(read_addr),
+	.rd_clk(ddr_clk),
+	.rd_en(m_axi_arvalid),
+	.dout(m_axi_araddr[C_M_AXI_ADDR_WIDTH-1:6]),
+	.full(),
+	.empty(ddr_read_addr_fifo_empty),
+	.prog_full(ddr_read_addr_fifo_afull)
+);
 
-// Cross clock domain
-reg         read_init_q, read_init_q2;
-reg         read_init_rise = 0;
-reg [31:0]  read_length_q, read_length_q2;
-reg [31:0]  read_start_addr_q, read_start_addr_q2;
+assign m_axi_arvalid = m_axi_arready & (~ddr_read_addr_fifo_empty) & read_credit_val;
+assign m_axi_araddr[5:0] = 6'b0;
 
-always @(posedge ddr_clk)
-begin
-  read_init_q <= read_init;
-  read_init_q2 <= read_init_q;
-  read_init_rise <= read_init_q && ~read_init_q2;
-  read_length_q <= read_length;
-  read_length_q2 <= read_length_q;
-  read_start_addr_q <= read_start_addr;
-  read_start_addr_q2 <= read_start_addr_q;
-end
 
 // Read address channel
 assign m_axi_arid = 0;
@@ -347,92 +355,7 @@ assign m_axi_arburst = 2'b01; // INCR burst mode
 assign m_axi_arcache = 4'b0010;
 assign m_axi_aruser = 1'b1;
 assign m_axi_arsize = 3'b110; // 64bytes burst, 1 beat on 512b width bus
-
-// Count the number of burst needs to initate
-integer       burst_left = 0;
-reg           burst_read_active = 1'b0;
-reg           start_single_burst_read = 1'b0;
-
-always @(posedge ddr_clk)
-begin
-  if (~axi_aresetn)
-    begin
-      burst_left <= 0;
-    end
-  else if (read_init_rise && (burst_left == 0))
-    begin
-      burst_left <= read_length_q2;
-    end
-  else if (start_single_burst_read)
-    burst_left <= burst_left - 1;
-  else
-    burst_left <= burst_left;
-end
-
-
-// burst_read_active remains asserted 
-// until the burst write is accepted by the slave
-always @(posedge ddr_clk)
-begin
-  if (~axi_aresetn || read_init_rise)
-    burst_read_active <= 1'b0;
-  else if (start_single_burst_read)
-    burst_read_active <= 1'b1;
-  else if (m_axi_rvalid && m_axi_rready && m_axi_rlast)
-    burst_read_active <= 1'b0;
-end
-
-// Generate start_single_burst_read pulse
-always @(posedge ddr_clk)
-begin
-  if (~axi_aresetn)
-    start_single_burst_read <= 1'b0;
-  else if (~m_axi_arvalid && ~start_single_burst_read &&
-           ~burst_read_active && (burst_left != 0))
-    start_single_burst_read <= 1'b1;
-  else
-    start_single_burst_read <= 1'b0;
-end
-
-reg int_axi_arvalid = 1'b0;
-
-always @(posedge ddr_clk)                                 
-begin                                                                                                         
-  if (~axi_aresetn || read_init_rise)                                         
-    begin                                                          
-      int_axi_arvalid <= 1'b0;                                         
-    end                                                            
-  // If previously not valid , start next transaction              
-  else if (~int_axi_arvalid && start_single_burst_read)                
-    begin                                                          
-      int_axi_arvalid <= 1'b1;                                         
-    end                                                            
-  else if (m_axi_arready && m_axi_arvalid)                           
-    begin                                                          
-      int_axi_arvalid <= 1'b0;                                         
-    end                                                            
-  else                                                             
-    int_axi_arvalid <= int_axi_arvalid;                                    
-end
-
-assign m_axi_arvalid = int_axi_arvalid & read_credit_val;
-
-always @(posedge ddr_clk)                                         
-begin                                                                
-  if (~axi_aresetn)                                                                                                    
-    m_axi_araddr <= 0;                                             
-  else if (read_init_rise)
-    m_axi_araddr <= {read_start_addr_q2, 6'b0};   // 64B address to 1B address                                                         
-  else if (m_axi_arready && m_axi_arvalid)                                                                                       
-    m_axi_araddr <= m_axi_araddr + C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;                                                                               
-  else                                                               
-    m_axi_araddr <= m_axi_araddr;                                        
-end
-
-always @(posedge ddr_clk)
-begin
-    m_axi_arlen <= C_M_AXI_BURST_LEN - 1;   
-end
+assign m_axi_arlen = 0;
 
 // Generate dma interface signals
 wire						        ddr_read_data_fifo_rd;
@@ -445,7 +368,7 @@ wire	[WIDTH-1:0]			        read_ack_dly;
 
 ddr_read_info_fifo	ddr_read_info_fifo
 (
-    .rst(rst),
+    .srst(rst),
     .clk(clk),
     .wr_en(ddr_read_addr_send),
     .din({read_done, read_ack_keep}),
@@ -462,7 +385,7 @@ assign	ddr_read_data_fifo_rd	= ~ddr_read_data_fifo_empty & dout_rdy;
 wire  ddr_read_data_fifo_full;
 ddr_read_data_fifo	ddr_read_data_fifo
 (
-    .rst(rst),
+    .srst(rst),
     .wr_clk(ddr_clk),
     .wr_en(m_axi_rvalid & ~rst),
     .din(m_axi_rdata),
