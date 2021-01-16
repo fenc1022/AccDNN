@@ -11,6 +11,9 @@ input                   clk,
 input                   ddr_clk,
 input                   resetn,
 input                   init_calib_complete,
+(* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 complete_int INTERRUPT" *)
+(* X_INTERFACE_PARAMETER = "SENSITIVITY EDGE_RISING" *)
+output                  complete_int,
 // Ports of Axi Slave contrl bus
 input wire [C_S_AXI_ADDR_WIDTH-1 : 0] s_axi_awaddr,
 input wire [2 : 0] s_axi_awprot,
@@ -131,10 +134,15 @@ input   [C_M_AXI_ID_WIDTH-1:0]          host_rid,
 input                                   host_ruser
 );
 
+wire                                load_weights;    
+wire                                model_reset;
+wire                                weight_write_done;  
 wire                                model_start;
-wire                                write_req;
+wire [C_M_AXI_ADDR_WIDTH-1:0]       host_weights_addr;
+wire [C_M_AXI_ADDR_WIDTH-1:0]       host_src_addr;
+wire [C_S_AXI_DATA_WIDTH-1:0]       image_num;
 wire [DMA_ADDR_WIDTH-1:0]           write_start_addr;
-wire [C_M_AXI_ADDR_WIDTH-1:0]       blob_out_address;
+wire [C_M_AXI_ADDR_WIDTH-1:0]       host_dst_addr;
 wire [DMA_ADDR_WIDTH-1:0]           write_length;
 wire                                write_done;
 wire [C_M_AXI_DATA_WIDTH-1:0]       din;
@@ -216,9 +224,18 @@ wire                                read_ack_15;
     .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
     .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
   ) ctrl_regs_inst (
-    .model_start(model_start),
-    .write_start_addr(write_start_addr),
-    .blob_out_address(blob_out_address),
+    .ddr_cal_done(init_calib_complete),
+    .weight_write_done(weight_write_done),
+    .inference_done(blob_dout_eop),
+    .model_reset(model_reset),
+    .weight_write(load_weights),
+    .inference_start(model_start),
+    .task_comp_irq(complete_int),
+    .image_num(image_num),
+    .dev_weights_addr(write_start_addr),
+    .host_dst_addr(host_dst_addr),
+    .host_weights_addr(host_weights_addr),
+    .host_src_addr(host_src_addr),
     .S_AXI_ACLK(clk),
     .S_AXI_ARESETN(resetn),
     .S_AXI_AWADDR(s_axi_awaddr),
@@ -249,8 +266,8 @@ ddr3_dma_engineer #(
 ) ddr3_dma_engineer_inst(
 .clk                 ( clk                ),
 .ddr_clk             ( ddr_clk            ),
-.rst                 ( ~resetn            ),
-.write_req           ( write_req          ),
+.rst                 ( model_reset        ),
+.write_req           ( load_weights       ),
 .write_start_addr    ( write_start_addr   ),
 .write_length        ( write_length       ),
 .write_done          ( write_done         ),
@@ -328,7 +345,7 @@ ddr3_dma_engineer #(
 .read_ack_15         ( read_ack_15        ),
 
 .init_calib_complete ( init_calib_complete ),
-.axi_aresetn         ( resetn            ),
+.axi_aresetn         ( !model_reset      ),
 .m_axi_awaddr        ( ddr_awaddr        ),
 .m_axi_awlen         ( ddr_awlen         ),
 .m_axi_awsize        ( ddr_awsize        ),
@@ -378,9 +395,13 @@ host_dma_engineer #(
   .C_M_AXI_DATA_WIDTH (C_M_AXI_DATA_WIDTH)
 ) host_dma_engineer_inst(
 .clk                 ( clk                ),
+.load_weights        ( load_weights       ),
 .model_start         ( model_start        ),
-.blob_out_address    ( blob_out_address   ),
-.m_axi_aresetn       ( resetn             ),
+.image_num           ( image_num          ),
+.host_weights_addr   ( host_weights_addr  ),
+.host_src_addr       ( host_src_addr      ),
+.host_dst_addr       ( host_dst_addr      ),
+.m_axi_aresetn       ( !model_reset       ),
 .m_axi_awaddr        ( host_awaddr        ),
 .m_axi_awlen         ( host_awlen         ),
 .m_axi_awsize        ( host_awsize        ),
@@ -430,22 +451,36 @@ host_dma_engineer #(
 .blob_din_en         ( blob_din_en        ),
 .blob_din            ( blob_din           ),
 .blob_din_eop        ( blob_din_eop       ),
-.blob_din_rdy        ( blob_din_rdy       )
+.blob_din_rdy        ( blob_din_rdy       ),
+.ddr_write_length    ( write_length       ),
+.ddr_din             ( din                ),
+.ddr_din_rdy         ( din_rdy            ),
+.ddr_din_en          ( din_en             ),
+.ddr_din_eop         ( din_eop            )
 );
 
 model model_inst
 (
 .clk                     ( clk                ),
-.rst                     ( ~resetn            ),
-.ddr_read_length_14      ( read_length_14     ),
+.rst                     ( model_reset        ),
 .ddr_dout                ( dout               ),
+.ddr_dout_en             ( dout_en            ),
+.ddr_dout_eop            ( dout_eop           ),
+.blob_din_eop            ( blob_din_eop       ),
+.blob_din_en             ( blob_din_en        ),
+.blob_din                ( blob_din           ),
+.blob_din_rdy            ( blob_din_rdy       ),
+.blob_dout_eop           ( blob_dout_eop      ),
+.blob_dout               ( blob_dout          ),
+.blob_dout_rdy           ( blob_dout_rdy      ),
+.blob_dout_en            ( blob_dout_en       ),
+.ddr_read_length_14      ( read_length_14     ),
 .ddr_read_length_3       ( read_length_3      ),
 .ddr_read_start_addr_8   ( read_start_addr_8  ),
 .ddr_read_req_14         ( read_req_14        ),
 .ddr_read_start_addr_6   ( read_start_addr_6  ),
 .ddr_read_start_addr_7   ( read_start_addr_7  ),
 .ddr_read_start_addr_4   ( read_start_addr_4  ),
-.blob_dout_rdy           ( blob_dout_rdy      ),
 .ddr_read_start_addr_2   ( read_start_addr_2  ),
 .ddr_read_start_addr_3   ( read_start_addr_3  ),
 .ddr_read_start_addr_0   ( read_start_addr_0  ),
@@ -454,20 +489,16 @@ model model_inst
 .ddr_read_req_12         ( read_req_12        ),
 .ddr_read_req_11         ( read_req_11        ),
 .ddr_read_req_10         ( read_req_10        ),
-.ddr_dout_eop            ( dout_eop           ),
 .ddr_read_start_addr_12  ( read_start_addr_12 ),
-.blob_dout_en            ( blob_dout_en       ),
 .ddr_read_start_addr_9   ( read_start_addr_9  ),
 .ddr_read_start_addr_10  ( read_start_addr_10 ),
 .ddr_read_start_addr_11  ( read_start_addr_11 ),
 .ddr_read_start_addr_5   ( read_start_addr_5  ),
 .ddr_read_start_addr_13  ( read_start_addr_13 ),
 .ddr_read_start_addr_14  ( read_start_addr_14 ),
-.ddr_dout_en             ( dout_en            ),
 .ddr_read_length_0       ( read_length_0      ),
 .ddr_read_length_1       ( read_length_1      ),
 .ddr_read_length_2       ( read_length_2      ),
-.blob_din_rdy            ( blob_din_rdy       ),
 .ddr_read_length_4       ( read_length_4      ),
 .ddr_read_length_5       ( read_length_5      ),
 .ddr_read_length_6       ( read_length_6      ),
@@ -480,20 +511,15 @@ model model_inst
 .ddr_read_req_2          ( read_req_2         ),
 .ddr_read_req_1          ( read_req_1         ),
 .ddr_read_req_0          ( read_req_0         ),
-.blob_dout_eop           ( blob_dout_eop      ),
-.blob_dout               ( blob_dout          ),
 .ddr_read_req_5          ( read_req_5         ),
 .ddr_read_req_4          ( read_req_4         ),
 .ddr_read_ack_12         ( read_ack_12        ),
 .ddr_read_req_9          ( read_req_9         ),
 .ddr_read_req_8          ( read_req_8         ),
-.blob_din_eop            ( blob_din_eop       ),
-.blob_din                ( blob_din           ),
 .ddr_read_ack_13         ( read_ack_13        ),
 .ddr_read_length_12      ( read_length_12     ),
 .ddr_read_ack_10         ( read_ack_10        ),
 .ddr_read_length_13      ( read_length_13     ),
-.blob_din_en             ( blob_din_en        ),
 .ddr_read_ack_11         ( read_ack_11        ),
 .ddr_read_length_10      ( read_length_10     ),
 .ddr_read_req_6          ( read_req_6         ),

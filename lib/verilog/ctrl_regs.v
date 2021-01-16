@@ -1,6 +1,14 @@
 
 `timescale 1 ns / 1 ps
 
+`define ACCDNN_CTRL_START_MASK  32'h00000001  /* Start inferrence */
+`define ACCDNN_CTRL_LOAD_MASK   32'h00000002  /* Start load weight */
+`define ACCDNN_CTRL_EINT_MASK   32'h00000004  /* Enable interrupt */
+`define ACCDNN_CTRL_RST_MASK    32'h00000008  /* Reset module */
+`define ACCDNN_STAT_RDY_MASK    32'h00000001  /* module is ready to run */
+`define ACCDNN_STAT_BUSY_MASK   32'h00000002  /* Processing */
+`define ACCDNN_STAT_DONE_MASK   32'h00000004  /* Inference finish */
+
     module ctrl_regs #
     (
         // Users to add parameters here
@@ -16,9 +24,23 @@
     )
     (
         // Users to add ports here
-        output wire model_start,
-        output wire [DMA_ADDR_WIDTH-1:0] write_start_addr,
-        output wire [C_M_AXI_ADDR_WIDTH-1:0] blob_out_address,
+        input wire ddr_cal_done,
+        input wire weight_write_done,
+        input wire inference_done,
+        output wire model_reset,
+        output wire weight_write,
+        output wire inference_start,
+        output wire task_comp_irq,
+        // Number of images to be infered
+        output wire [C_S_AXI_DATA_WIDTH-1:0] image_num,
+        // Address of weights in device memory
+        output wire [C_S_AXI_DATA_WIDTH-1:0] dev_weights_addr,
+        // Address of output data in host memory
+        output wire [C_S_AXI_DATA_WIDTH-1:0] host_dst_addr,
+        // Address of weights in host memory */
+        output wire [C_S_AXI_DATA_WIDTH-1:0] host_weights_addr,
+        // Address of input data in host memory
+        output wire [C_S_AXI_DATA_WIDTH-1:0] host_src_addr,
         // User ports ends
         // Do not modify the ports beyond this line
 
@@ -295,13 +317,13 @@
                     // Slave register 0
                     slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                   end  
-              5'h01:
-                for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 1
-                    slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                  end  
+              // 5'h01:
+              //   for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+              //     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+              //       // Respective byte enables are asserted as per write strobes 
+              //       // Slave register 1
+              //       slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+              //     end  
               5'h02:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                   if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -549,8 +571,25 @@
             endcase
           end
         else
-          begin // slv_reg0[0] auto clear
-            slv_reg0[0] <= 1'b0;
+          begin
+            // Control register auto clear
+            slv_reg0 <= slv_reg0 & (`ACCDNN_CTRL_START_MASK |
+                                    `ACCDNN_CTRL_LOAD_MASK |
+                                    `ACCDNN_CTRL_RST_MASK);
+            // Status register update
+            case (state)
+              ST_RST:
+                slv_reg1 <= 0;
+              ST_INT:
+                slv_reg1 <= 0;
+              ST_RDY:
+                slv_reg1 <= `ACCDNN_STAT_RDY_MASK |
+                            ( is_task_finished ? `ACCDNN_STAT_DONE_MASK : 0);
+              ST_RUN:
+                slv_reg1 <= `ACCDNN_STAT_BUSY_MASK;
+              default:
+                slv_reg1 <= 0;
+            endcase
           end
       end
     end    
@@ -713,10 +752,122 @@
     end    
 
     // Add user logic here
-    assign model_start = slv_reg0[0];
-    assign write_start_addr = slv_reg1[DMA_ADDR_WIDTH-1:0];
-    assign blob_out_address = slv_reg2[C_M_AXI_ADDR_WIDTH-1:0];
+    localparam ST_RST = 2'b00;
+    localparam ST_INT = 2'b01;
+    localparam ST_RDY = 2'b10;
+    localparam ST_RUN = 2'b11;
 
+    reg [1:0] state = ST_RST;
+
+    reg     is_weight_loaded = 1'b0;
+    reg     is_img_numbered = 1'b0;
+    reg     is_infer_started = 1'b0;
+    reg     is_task_finished = 1'b0;
+    reg     inference_done_q;
+    reg     inference_done_rise;
+
+    integer eop_count = 0;
+
+    always @(posedge S_AXI_ACLK) begin
+      inference_done_q <= inference_done;
+      inference_done_rise <= inference_done & (!inference_done_q);
+    end
+
+    always @(posedge S_AXI_ACLK) begin
+      if ( S_AXI_ARESETN == 1'b0 ) begin
+        state <= ST_RST;
+        is_weight_loaded <= 1'b0;
+        is_img_numbered <= 1'b0;
+        is_infer_started <= 1'b0;
+        is_task_finished <= 1'b0;
+        eop_count <= 0;
+      end
+      else begin
+        case (state)
+          ST_RST : begin
+            is_weight_loaded <= 1'b0;
+            is_img_numbered <= 1'b0;
+            is_infer_started <= 1'b0;
+            is_task_finished <= 1'b0;
+            eop_count <= 0;
+
+            if (ddr_cal_done)
+              state <= ST_INT;
+            else
+              state <= ST_RST;
+          end
+          ST_INT : begin
+            if (weight_write_done)
+              is_weight_loaded <= 1'b1;
+            
+            is_img_numbered <= (image_num != 0);
+            is_infer_started <= 1'b0;
+            is_task_finished <= 1'b0;
+            eop_count <= 0;
+
+            if (~ddr_cal_done)
+              state <= ST_RST;
+            else if (is_weight_loaded && is_img_numbered)
+              state <= ST_RDY;
+            else
+              state <= ST_INT;
+          end
+          ST_RDY : begin
+            if (inference_start) begin
+              is_infer_started <= 1'b1;
+              is_task_finished <= 1'b0;
+            end
+
+            if (weight_write) begin
+              is_weight_loaded <= 1'b0;
+              is_task_finished <= 1'b0;
+            end
+            
+            is_img_numbered <= (image_num != 0);
+            eop_count <= 0;
+
+            if (!(is_weight_loaded && is_img_numbered))
+              state <= ST_INT;
+            else if (is_infer_started)
+              state <= ST_RUN;
+            else
+              state <= ST_RDY;
+          end
+          ST_RUN : begin
+            if (eop_count == image_num)
+              is_task_finished <= 1'b1;
+            
+            if (inference_done_rise)
+              eop_count <= eop_count + 1;
+            else if (eop_count == image_num)
+              eop_count <= 0;
+            
+            is_weight_loaded <= 1'b1;
+            is_img_numbered <= 1'b1;
+            is_infer_started <= 1'b1;
+            
+            if (is_task_finished)
+              state <= ST_RDY;
+            else
+              state <= ST_RUN;
+          end
+          default : begin  // Fault Recovery
+            state <= ST_RST;
+          end
+        endcase
+      end
+    end
+
+    assign model_reset = (slv_reg0 & `ACCDNN_CTRL_RST_MASK) || (state == ST_RST);
+    assign weight_write = (slv_reg0 & `ACCDNN_CTRL_LOAD_MASK) && ((state == ST_INT) | (state == ST_RDY));
+    assign inference_start = (slv_reg0 & `ACCDNN_CTRL_START_MASK) && (state == ST_RDY);
+    assign task_comp_irq = (slv_reg0 & `ACCDNN_CTRL_EINT_MASK) && (state == ST_RUN) & is_task_finished;
+
+    assign dev_weights_addr  = slv_reg2;
+    assign host_weights_addr = slv_reg3;
+    assign host_src_addr     = slv_reg4;
+    assign host_dst_addr     = slv_reg5;
+    assign image_num         = slv_reg6;
     // User logic ends
 
     endmodule

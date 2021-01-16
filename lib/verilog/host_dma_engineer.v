@@ -1,13 +1,22 @@
+`timescale 1 ns / 1 ps
+
+`define TOTAL_INPUT_COUNT   128     // 32x32x4x16/512
+`define TOTAL_WEIGHT_COUNT  4568    // TODO: How to find weight size for each model
+
 module host_dma_engineer #(
   parameter C_M_AXI_ID_WIDTH = 4,
   parameter C_M_AXI_BURST_LEN = 1, // Only support 1 for now
+  parameter integer DMA_ADDR_WIDTH = 27,
   parameter C_M_AXI_ADDR_WIDTH = 32,
-  parameter C_M_AXI_DATA_WIDTH = 512,
-  parameter BLOB_SIZE = 4096
+  parameter C_M_AXI_DATA_WIDTH = 512
 ) (
 input                                   clk,
+input                                   load_weights, // ddr_write_req in simulation testbench
 input                                   model_start,
-input   [C_M_AXI_ADDR_WIDTH-1:0]        blob_out_address,
+input   [31:0]                          image_num,
+input   [C_M_AXI_ADDR_WIDTH-1:0]        host_weights_addr,
+input   [C_M_AXI_ADDR_WIDTH-1:0]        host_src_addr,
+input   [C_M_AXI_ADDR_WIDTH-1:0]        host_dst_addr,
 // axi master Interface
 input                   m_axi_aresetn,
 // axi write address
@@ -64,10 +73,17 @@ input  [C_M_AXI_DATA_WIDTH-1:0]	        blob_dout,
 input	                                  blob_dout_en,
 output	                                blob_dout_rdy,
 
-output reg                              blob_din_eop,
-output reg [C_M_AXI_DATA_WIDTH-1:0]     blob_din,
-output reg                              blob_din_en,
-input                                   blob_din_rdy
+output                                  blob_din_eop,
+output     [C_M_AXI_DATA_WIDTH-1:0]     blob_din,
+output                                  blob_din_en,
+input                                   blob_din_rdy,
+
+// ddr interface
+output  [DMA_ADDR_WIDTH-1:0]            ddr_write_length,
+output  [C_M_AXI_DATA_WIDTH-1:0]        ddr_din,
+input                                   ddr_din_rdy,
+output                                  ddr_din_en,
+output                                  ddr_din_eop
 );
 
 
@@ -135,12 +151,14 @@ begin
     m_axi_awvalid <= m_axi_awvalid;                                      
 end                                                                
 
-// To do: Calculate write back address
+// Write back address
 always @(posedge clk)                                         
 begin                                                                
   if (~m_axi_aresetn)                                                                                                    
-    m_axi_awaddr <= 0;                                             
-  else if (m_axi_awready && m_axi_awvalid)                                                                                       
+    m_axi_awaddr <= 0;
+  else if (model_start_rise)
+    m_axi_awaddr <= host_dst_addr;
+  else if (m_axi_awready && m_axi_awvalid)
     m_axi_awaddr <= m_axi_awaddr + C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;                                                                               
   else                                                               
     m_axi_awaddr <= m_axi_awaddr;                                        
@@ -171,12 +189,18 @@ assign m_axi_bready = 1'b1;
 // Count the number of burst needs to initate
 reg     model_start_q;
 reg     model_start_rise;
+reg     load_weights_q;
+reg     load_weights_rise;
+reg     is_weights = 1'b0;  // 1: transfer weight to ddr; 0: transfer blob to model
 integer burst_left = 0;
+integer cycle_cnt = 0;
 
 always @(posedge clk)
 begin
-  model_start_q <= model_start;
-  model_start_rise <= model_start && ~model_start_q;  
+  model_start_q    <= model_start;
+  model_start_rise <= model_start && ~model_start_q;
+  load_weights_q    <= load_weights;
+  load_weights_rise <= load_weights && ~load_weights_q;
 end
 
 always @(posedge clk)
@@ -184,12 +208,32 @@ begin
   if(~m_axi_aresetn)
     burst_left <= 0;
   else if (model_start_rise)
-    // Assuming dividable
-    burst_left <= BLOB_SIZE / C_M_AXI_DATA_WIDTH;  
+    burst_left <= `TOTAL_INPUT_COUNT * image_num;
+  else if (load_weights_rise)
+    burst_left <= `TOTAL_WEIGHT_COUNT;
   else if (m_axi_arvalid && m_axi_arready)
     burst_left <= burst_left - 1;
   else
     burst_left <= burst_left;
+  
+  if(~m_axi_aresetn)
+    cycle_cnt <= 0;
+  else if (model_start_rise)
+    cycle_cnt <= `TOTAL_INPUT_COUNT * image_num;
+  else if (load_weights_rise)
+    cycle_cnt <= `TOTAL_WEIGHT_COUNT;
+  else if (m_axi_rvalid && m_axi_rready)
+    cycle_cnt <= cycle_cnt - 1;
+  else
+    cycle_cnt <= cycle_cnt;
+
+  if(~m_axi_aresetn)
+    is_weights <= 1'b0;
+  else if (model_start_rise)
+    is_weights <= 1'b0;
+  else if (load_weights_rise)
+    is_weights <= 1'b1;
+  
 end
 
 // Generate start_single_burst_read pulse
@@ -200,7 +244,7 @@ reg   burst_read_active = 1'b0;
 // until the burst read data received
 always @(posedge clk)
 begin
-  if (~m_axi_aresetn || model_start_rise)
+  if (~m_axi_aresetn || model_start_rise || load_weights_rise)
     burst_read_active <= 1'b0;
   else if (start_single_burst_read)
     burst_read_active <= 1'b1;
@@ -232,7 +276,7 @@ assign m_axi_arlen = 8'h0F;
 
 always @(posedge clk)                                 
 begin                                                                                                         
-  if (~m_axi_aresetn || model_start_rise)                                         
+  if (~m_axi_aresetn || model_start_rise || load_weights_rise)                                         
     begin                                                          
       m_axi_arvalid <= 1'b0;                                         
     end                                                            
@@ -254,23 +298,37 @@ begin
   if (~m_axi_aresetn)                                                                                                    
     m_axi_araddr <= 0;                                             
   else if (model_start_rise)
-    m_axi_araddr <= blob_out_address;                                                            
+    m_axi_araddr <= host_src_addr;                                                            
+  else if (load_weights_rise)
+    m_axi_araddr <= host_weights_addr;
   else if (m_axi_arready && m_axi_arvalid)                                                                                       
     m_axi_araddr <= m_axi_araddr + C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;                                                                               
   else                                                               
     m_axi_araddr <= m_axi_araddr;                                        
 end
 
-always @(posedge clk)
-begin
-  blob_din <= m_axi_rdata;
-  blob_din_en <= m_axi_rvalid;
-  if ((burst_left == 1) && m_axi_arvalid && m_axi_arready)
-    blob_din_eop <= 1'b1;
-  else if (blob_din_eop && blob_din_en && blob_din_rdy)  
-    blob_din_eop <= 1'b0;
-  else
-    blob_din_eop <=blob_din_eop;
-end  
+// always @(posedge clk)
+// begin
+//   blob_din <= m_axi_rdata;
+//   blob_din_en <= m_axi_rvalid & (!is_weights);
+//   if ((burst_left == 1) && m_axi_arvalid && m_axi_arready)
+//     blob_din_eop <= 1'b1;
+//   else if (blob_din_eop && blob_din_en && blob_din_rdy)  
+//     blob_din_eop <= 1'b0;
+//   else
+//     blob_din_eop <=blob_din_eop;
+// end  
+
+
+assign blob_din = m_axi_rdata;
+assign blob_din_en = m_axi_rvalid & (!is_weights);
+assign blob_din_eop = blob_din_en & blob_din_rdy & (cycle_cnt == 1) & (!is_weights);
+
+assign ddr_din = m_axi_rdata;
+assign ddr_din_en = m_axi_rvalid & is_weights;
+assign ddr_din_eop = ddr_din_en & ddr_din_rdy & (cycle_cnt == 1) & is_weights;
+
+assign m_axi_rready = is_weights ? ddr_din_rdy : blob_din_rdy;
+assign ddr_write_length = `TOTAL_WEIGHT_COUNT;
 
 endmodule
