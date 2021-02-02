@@ -144,7 +144,6 @@ wire [C_S_AXI_DATA_WIDTH-1:0]       image_num;
 wire [DMA_ADDR_WIDTH-1:0]           write_start_addr;
 wire [C_M_AXI_ADDR_WIDTH-1:0]       host_dst_addr;
 wire [DMA_ADDR_WIDTH-1:0]           write_length;
-wire                                write_done;
 wire [C_M_AXI_DATA_WIDTH-1:0]       din;
 wire                                din_rdy;
 wire                                din_en;
@@ -270,7 +269,7 @@ ddr3_dma_engineer #(
 .write_req           ( load_weights       ),
 .write_start_addr    ( write_start_addr   ),
 .write_length        ( write_length       ),
-.write_done          ( write_done         ),
+.write_done          ( weight_write_done  ),
 .din                 ( din                ),
 .din_rdy             ( din_rdy            ),
 .din_en              ( din_en             ),

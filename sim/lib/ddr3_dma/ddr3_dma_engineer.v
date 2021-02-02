@@ -159,7 +159,7 @@ ddr3_dma_write #
 (
     .DMA_ADDR_WIDTH         ( DMA_ADDR_WIDTH        ),
     .C_M_AXI_ID_WIDTH       ( C_M_AXI_ID_WIDTH      ),
-    .C_M_AXI_BURST_LEN      ( C_M_AXI_BURST_LEN     ),
+    .C_M_AXI_BURST_LEN      ( 1                     ), // TODO: Support longer burst length
     .C_M_AXI_ADDR_WIDTH     ( C_M_AXI_ADDR_WIDTH    ),
     .C_M_AXI_DATA_WIDTH     ( C_M_AXI_DATA_WIDTH    )
 ) u_ddr3_dma_write 
@@ -167,7 +167,6 @@ ddr3_dma_write #
     .clk                     ( clk                  ),
     .ddr_clk                 ( ddr_clk              ),
     .rst                     ( rst                  ),
-    .init_calib_complete     ( init_calib_complete  ),
     .write_req               ( write_req            ),
     .write_start_addr        ( write_start_addr     ),
     .write_length            ( write_length         ),
@@ -176,7 +175,6 @@ ddr3_dma_write #
     .din_en                  ( din_en               ),
     .din_eop                 ( din_eop              ),
     .din_rdy                 ( din_rdy              ),
-    .axi_aresetn             ( axi_aresetn          ),
     .m_axi_awaddr            ( m_axi_awaddr         ),
     .m_axi_awlen             ( m_axi_awlen          ),
     .m_axi_awsize            ( m_axi_awsize         ),

@@ -90,6 +90,15 @@ output                                  ddr_din_eop
 wire                            host_write_fifo_empty;
 wire  [C_M_AXI_DATA_WIDTH-1:0]  host_write_fifo_dout;
 reg                             start_single_burst_write = 1'b0;
+reg     model_start_q;
+reg     model_start_rise;
+reg     load_weights_q;
+reg     load_weights_rise;
+reg     is_weights = 1'b0;  // 1: transfer weight to ddr; 0: transfer blob to model
+integer burst_left = 0;
+integer cycle_cnt = 0;
+reg     start_single_burst_read = 1'b0;
+reg     burst_read_active = 1'b0;
 
 host_write_fifo	host_write_fifo_inst
 (
@@ -115,7 +124,7 @@ assign m_axi_awuser = 1;
 assign m_axi_awcache = 4'b0010;
 assign m_axi_awburst = 2'b01; // INCR burst
 assign m_axi_awsize = 3'b110; // 64bytes burst, 1 beat on 512b width bus
-assign m_axi_awlen = 8'h0F;
+assign m_axi_awlen = 8'h00; // awlen+1 beat tranfer
 assign m_axi_wlast = 1'b1;   
 assign m_axi_wuser = 1'b1;
 assign m_axi_wstrb = {(C_M_AXI_DATA_WIDTH/8){1'b1}};
@@ -184,17 +193,7 @@ end
 // Write response channel
 assign m_axi_bready = 1'b1;
 
-
-
 // Count the number of burst needs to initate
-reg     model_start_q;
-reg     model_start_rise;
-reg     load_weights_q;
-reg     load_weights_rise;
-reg     is_weights = 1'b0;  // 1: transfer weight to ddr; 0: transfer blob to model
-integer burst_left = 0;
-integer cycle_cnt = 0;
-
 always @(posedge clk)
 begin
   model_start_q    <= model_start;
@@ -237,8 +236,6 @@ begin
 end
 
 // Generate start_single_burst_read pulse
-reg   start_single_burst_read = 1'b0;
-reg   burst_read_active = 1'b0;
 
 // burst_read_active remains asserted 
 // until the burst read data received
@@ -272,7 +269,7 @@ assign m_axi_arburst = 2'b01; // INCR burst mode
 assign m_axi_arcache = 4'b0010;
 assign m_axi_aruser = 1'b1;
 assign m_axi_arsize = 3'b110; // 64bytes burst, 1 beat on 512b width bus
-assign m_axi_arlen = 8'h0F;
+assign m_axi_arlen = 8'h00;  // arlen+1 beat tranfer
 
 always @(posedge clk)                                 
 begin                                                                                                         
@@ -306,19 +303,6 @@ begin
   else                                                               
     m_axi_araddr <= m_axi_araddr;                                        
 end
-
-// always @(posedge clk)
-// begin
-//   blob_din <= m_axi_rdata;
-//   blob_din_en <= m_axi_rvalid & (!is_weights);
-//   if ((burst_left == 1) && m_axi_arvalid && m_axi_arready)
-//     blob_din_eop <= 1'b1;
-//   else if (blob_din_eop && blob_din_en && blob_din_rdy)  
-//     blob_din_eop <= 1'b0;
-//   else
-//     blob_din_eop <=blob_din_eop;
-// end  
-
 
 assign blob_din = m_axi_rdata;
 assign blob_din_en = m_axi_rvalid & (!is_weights);
