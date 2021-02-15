@@ -20,31 +20,31 @@ input   [C_M_AXI_ADDR_WIDTH-1:0]        host_dst_addr,
 // axi master Interface
 input                   m_axi_aresetn,
 // axi write address
-output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
+(* MARK_DEBUG="true" *)output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
 output  [7:0]                           m_axi_awlen,
 output  [2:0]                           m_axi_awsize,
 output  [1:0]                           m_axi_awburst,
 output  [3:0]                           m_axi_awcache,
-output reg                              m_axi_awvalid,
+(* MARK_DEBUG="true" *)output reg                              m_axi_awvalid,
 output  [C_M_AXI_ID_WIDTH-1:0]          m_axi_awid,
 output                                  m_axi_awlock,
 output  [2:0]                           m_axi_awprot,
 output  [3:0]                           m_axi_awqos,
 output                                  m_axi_awuser,
-input                                   m_axi_awready,
+(* MARK_DEBUG="true" *)input                                   m_axi_awready,
 // axi write data
-output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
+(* MARK_DEBUG="true" *)output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
 output  [C_M_AXI_DATA_WIDTH/8-1:0]      m_axi_wstrb,
-output                                  m_axi_wlast,
-output reg                              m_axi_wvalid,
+(* MARK_DEBUG="true" *)output                                  m_axi_wlast,
+(* MARK_DEBUG="true" *)output reg                              m_axi_wvalid,
 output                                  m_axi_wuser,
-input                                   m_axi_wready,
+(* MARK_DEBUG="true" *)input                                   m_axi_wready,
 // axi write response
-output   [1:0]                          m_axi_bresp,
-output                                  m_axi_bvalid,
-output   [C_M_AXI_ID_WIDTH-1:0]         m_axi_bid,
-output                                  m_axi_buser,
-input                                   m_axi_bready,
+input   [1:0]                           m_axi_bresp,
+(* MARK_DEBUG="true" *)input                                   m_axi_bvalid,
+input   [C_M_AXI_ID_WIDTH-1:0]          m_axi_bid,
+input                                   m_axi_buser,
+output                                  m_axi_bready,
 // axi read address
 output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
 output  [7:0]                           m_axi_arlen,
@@ -87,9 +87,10 @@ output                                  ddr_din_eop
 );
 
 
-wire                            host_write_fifo_empty;
+(* MARK_DEBUG="true" *)wire                            host_write_fifo_empty;
+(* MARK_DEBUG="true" *)wire                            host_write_fifo_full;
 wire  [C_M_AXI_DATA_WIDTH-1:0]  host_write_fifo_dout;
-reg                             start_single_burst_write = 1'b0;
+(* MARK_DEBUG="true" *)reg                             start_single_burst_write = 1'b0;
 reg     model_start_q;
 reg     model_start_rise;
 reg     load_weights_q;
@@ -109,11 +110,13 @@ host_write_fifo	host_write_fifo_inst
     .rd_en(start_single_burst_write),
     .dout(host_write_fifo_dout),
 
-    .full(blob_dout_rdy),
+    .full(host_write_fifo_full),
     .empty(host_write_fifo_empty),
     .wr_rst_busy(),
   .rd_rst_busy()
 );
+
+assign blob_dout_rdy = ~host_write_fifo_full;
 
 // Write addresss channel
 assign m_axi_awid = 0;

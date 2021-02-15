@@ -144,14 +144,22 @@ wire [C_S_AXI_DATA_WIDTH-1:0]       image_num;
 wire [DMA_ADDR_WIDTH-1:0]           write_start_addr;
 wire [C_M_AXI_ADDR_WIDTH-1:0]       host_dst_addr;
 wire [DMA_ADDR_WIDTH-1:0]           write_length;
-wire [C_M_AXI_DATA_WIDTH-1:0]       din;
-wire                                din_rdy;
-wire                                din_en;
-wire                                din_eop;
-wire                                dout_rdy;
-wire [C_M_AXI_DATA_WIDTH-1:0]       dout;
-wire [15:0]                         dout_en;
-wire                                dout_eop;      
+wire                                blob_din_eop;
+wire [C_M_AXI_DATA_WIDTH-1:0]       blob_din;
+wire                                blob_din_en;
+wire                                blob_din_rdy;
+wire	                              blob_dout_eop;
+wire [C_M_AXI_DATA_WIDTH-1:0]	      blob_dout;
+wire	                              blob_dout_en;
+wire	                              blob_dout_rdy;
+wire [C_M_AXI_DATA_WIDTH-1:0]       ddr_din;
+wire                                ddr_din_rdy;
+wire                                ddr_din_en;
+wire                                ddr_din_eop;
+//wire                                ddr_dout_rdy;
+wire [C_M_AXI_DATA_WIDTH-1:0]       ddr_dout;
+wire [15:0]                         ddr_dout_en;
+wire                                ddr_dout_eop;      
 wire                                read_req_0;
 wire [DMA_ADDR_WIDTH-1:0]           read_start_addr_0;
 wire [DMA_ADDR_WIDTH-1:0]           read_length_0;
@@ -270,14 +278,14 @@ ddr3_dma_engineer #(
 .write_start_addr    ( write_start_addr   ),
 .write_length        ( write_length       ),
 .write_done          ( weight_write_done  ),
-.din                 ( din                ),
-.din_rdy             ( din_rdy            ),
-.din_en              ( din_en             ),
-.din_eop             ( din_eop            ),
-.dout_rdy            ( dout_rdy           ),
-.dout                ( dout               ),
-.dout_en             ( dout_en            ),
-.dout_eop            ( dout_eop           ),      
+.din                 ( ddr_din            ),
+.din_rdy             ( ddr_din_rdy        ),
+.din_en              ( ddr_din_en         ),
+.din_eop             ( ddr_din_eop        ),
+.dout_rdy            ( 1'b1               ), // ddr_dout_rdy
+.dout                ( ddr_dout           ),
+.dout_en             ( ddr_dout_en        ),
+.dout_eop            ( ddr_dout_eop       ),      
 .read_req_0          ( read_req_0         ),
 .read_start_addr_0   ( read_start_addr_0  ),
 .read_length_0       ( read_length_0      ),
@@ -452,19 +460,19 @@ host_dma_engineer #(
 .blob_din_eop        ( blob_din_eop       ),
 .blob_din_rdy        ( blob_din_rdy       ),
 .ddr_write_length    ( write_length       ),
-.ddr_din             ( din                ),
-.ddr_din_rdy         ( din_rdy            ),
-.ddr_din_en          ( din_en             ),
-.ddr_din_eop         ( din_eop            )
+.ddr_din             ( ddr_din            ),
+.ddr_din_rdy         ( ddr_din_rdy        ),
+.ddr_din_en          ( ddr_din_en         ),
+.ddr_din_eop         ( ddr_din_eop        )
 );
 
 model model_inst
 (
 .clk                     ( clk                ),
 .rst                     ( model_reset        ),
-.ddr_dout                ( dout               ),
-.ddr_dout_en             ( dout_en            ),
-.ddr_dout_eop            ( dout_eop           ),
+.ddr_dout                ( ddr_dout           ),
+.ddr_dout_en             ( ddr_dout_en        ),
+.ddr_dout_eop            ( ddr_dout_eop       ),
 .blob_din_eop            ( blob_din_eop       ),
 .blob_din_en             ( blob_din_en        ),
 .blob_din                ( blob_din           ),

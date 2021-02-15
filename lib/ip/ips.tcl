@@ -11,7 +11,7 @@ generate_target all [get_files  $ip_path/ddr_write_fifo/ddr_write_fifo.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_write_fifo/ddr_write_fifo.xci]
 
 create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name ddr_read_info_fifo
-set_property -dict [list CONFIG.Fifo_Implementation {Common_Clock_Builtin_FIFO} CONFIG.Performance_Options {Standard_FIFO} CONFIG.Input_Data_Width {17} CONFIG.Input_Depth {1024} CONFIG.Output_Data_Width {17} CONFIG.Output_Depth {1024}] [get_ips ddr_read_info_fifo]
+set_property -dict [list CONFIG.Fifo_Implementation {Common_Clock_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {17} CONFIG.Input_Depth {1024} CONFIG.Output_Data_Width {17} CONFIG.Output_Depth {1024}] [get_ips ddr_read_info_fifo]
 generate_target all [get_files  $ip_path/ddr_read_info_fifo/ddr_read_info_fifo.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_read_info_fifo/ddr_read_info_fifo.xci]
 

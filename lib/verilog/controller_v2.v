@@ -90,10 +90,10 @@ output [DOUBLE_BUF_WR_ADDR_WIDTH-1:0] double_buf_wr_addr;
 output reg [DOUBLE_BUF_RD_ADDR_WIDTH-1:0] double_buf_rd_addr;
 output reg [BM_RD_ADDR_WIDTH-1:0]         bm_rd_addr;
 //weight loader interface
-input                                 dma_engineer_dout_en;
-input                                 dma_engineer_dout_eop;
-input                                 dma_engineer_ack;
-output                                dma_engineer_req;
+(*mark_debug = "true"*)input                                 dma_engineer_dout_en;
+(*mark_debug = "true"*)input                                 dma_engineer_dout_eop;
+(*mark_debug = "true"*)input                                 dma_engineer_ack;
+(*mark_debug = "true"*)output                                dma_engineer_req;
 output reg [26:0]                     dma_engineer_start_addr;
 output     [26:0]                     dma_engineer_length;
 
@@ -104,12 +104,12 @@ output     [26:0]                     dma_engineer_length;
 wire    frame_end;
 wire    frame_rst = frame_end;
 
-wire    data_blob_rdy;     
-wire    weight_blob_rdy;  
-wire    module_en;
+(*mark_debug = "true"*)wire    data_blob_rdy;     
+(*mark_debug = "true"*)wire    weight_blob_rdy;  
+(*mark_debug = "true"*)wire    module_en;
 //delay one clock for better timing
 //--
-reg blob_dout_rdy_d;
+(*mark_debug = "true"*)reg blob_dout_rdy_d;
 always @ (posedge clk)
 begin
   blob_dout_rdy_d <= blob_dout_rdy;
@@ -692,7 +692,7 @@ end
 // generate dma_engineer_length;
 assign dma_engineer_length = LENGTH;
 
-reg wr_ack;
+(*mark_debug = "true"*)reg wr_ack;
 always @ (posedge clk)
 begin
   if(rst)
@@ -756,7 +756,7 @@ end
 assign double_buf_wr_en = dma_engineer_dout_en & wr_ack;
 
 //generate double_buf_wr_addr
-reg double_buf_rdy_sel;
+(*mark_debug = "true"*)reg double_buf_rdy_sel;
 reg [31:0] double_buf_wr_addr_tmp;
 always @ (posedge clk)
 begin
@@ -776,7 +776,7 @@ wire [DOUBLE_BUF_WR_ADDR_WIDTH-1:0] double_buf_wr_offset = (double_buf_wr_addr_s
 assign double_buf_wr_addr = double_buf_wr_addr_tmp[DOUBLE_BUF_WR_ADDR_WIDTH-1:0] + double_buf_wr_offset;
 
 //generate ping_buf_rdy
-reg ping_buf_rdy;
+(*mark_debug = "true"*)reg ping_buf_rdy;
 always @ (posedge clk)
 begin
   if(rst)
@@ -790,7 +790,7 @@ begin
 end
 
 //generate pong_buf_rdy
-reg pong_buf_rdy;
+(*mark_debug = "true"*)reg pong_buf_rdy;
 always @ (posedge clk)
 begin
   if(rst)

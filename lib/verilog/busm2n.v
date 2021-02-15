@@ -23,17 +23,17 @@ parameter N         = 320;
 //========================================
 input                                 clk;
 input                                 rst;
-input      [IN_WIDTH-1:0]             blob_din;
-output                                blob_din_rdy;
-input                                 blob_din_en;
-input                                 blob_din_eop;
-output     [OUT_WIDTH-1:0]            blob_dout;
-input                                 blob_dout_rdy;
-output                                blob_dout_en;
-output                                blob_dout_eop;
+(* MARK_DEBUG="true" *)input      [IN_WIDTH-1:0]             blob_din;
+(* MARK_DEBUG="true" *)output                                blob_din_rdy;
+(* MARK_DEBUG="true" *)input                                 blob_din_en;
+(* MARK_DEBUG="true" *)input                                 blob_din_eop;
+(* MARK_DEBUG="true" *)output     [OUT_WIDTH-1:0]            blob_dout;
+(* MARK_DEBUG="true" *)input                                 blob_dout_rdy;
+(* MARK_DEBUG="true" *)output                                blob_dout_en;
+(* MARK_DEBUG="true" *)output                                blob_dout_eop;
 
-reg [15:0] din_cnt;
-reg auto_pad;
+(* MARK_DEBUG="true" *)reg [15:0] din_cnt;
+(* MARK_DEBUG="true" *)reg auto_pad;
 always @ (posedge clk)
 begin
   if(rst)
@@ -64,8 +64,8 @@ end
 
 assign blob_din_eop_pad = (blob_din_eop | auto_pad) & (din_cnt == IN_COUNT - 1);
 
-reg [15:0] dout_cnt;
-reg [31:0] dout_cnt_total;
+(* MARK_DEBUG="true" *)reg [15:0] dout_cnt;
+(* MARK_DEBUG="true" *)reg [31:0] dout_cnt_total;
 always @ (posedge clk)
 begin
   if(rst | (dout_cnt_total == N-1))
@@ -126,7 +126,7 @@ generate
   end
 endgenerate
 
-reg last_blob_din;
+(* MARK_DEBUG="true" *)reg last_blob_din;
 always @ (posedge clk)
 begin
   if (rst)
@@ -137,7 +137,7 @@ begin
      last_blob_din <= last_blob_din;
 end
 
-reg trunc_en;
+(* MARK_DEBUG="true" *)reg trunc_en;
 always @ (posedge clk)
 begin
   if(rst)
@@ -150,7 +150,7 @@ begin
       trunc_en <= trunc_en;
 end
 
-reg read_write_sel;
+(* MARK_DEBUG="true" *)reg read_write_sel;
 always @ (posedge clk)
 begin
   if(rst)
