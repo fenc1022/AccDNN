@@ -219,6 +219,7 @@ input                           rst;
 input                           ddr_rst;
   
   wire                             ddr_clk;
+  assign  ddr_clk = clk;
 
   // Slave Interface Write Address Ports
   wire [C_M_AXI_ID_WIDTH-1:0]      c0_ddr4_s_axi_awid;
@@ -268,8 +269,9 @@ end
 ddr_mode_axi  u_ddr3_sim_top
 (
   .c0_init_calib_complete              (init_calib_complete),
-  .c0_ddr4_ui_clk                      (ddr_clk),
+  // .c0_ddr4_ui_clk                      (ddr_clk),
   .sys_rst                             (ddr_rst),
+  .clk                                 (clk),
   // Slave Interface Write Address Ports
   .c0_ddr4_aresetn                     (ddr4_aresetn),
   .c0_ddr4_s_axi_awid                  (c0_ddr4_s_axi_awid),

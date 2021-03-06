@@ -4,7 +4,7 @@ vmap work work
 proc comp_model {} {
     vlog \
 	    ./model_tb.v \
-        ../lib/blk_mem_gen_v8_1.v \
+        ../lib/blk_mem_gen_v8_4.v \
         ../lib/dist_mem_gen_v8_0.v \
         ../lib/glbl.v \
         -time 

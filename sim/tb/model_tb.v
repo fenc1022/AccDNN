@@ -1,9 +1,9 @@
-`timescale 1ns/1ps
+`timescale 1ns/1ns
 
 `define half_clk_cycle 50
-`define total_input_count 6912 //96*2
-`define total_weight_count 3468 //516262 //4568 //4544
-`define iterations 3
+`define total_input_count 128 //6912 //96*2
+`define total_weight_count 4572 //3468 //516262 //4568 //4544
+`define iterations 1
 `define databus_width 512
 module model_tb();
 

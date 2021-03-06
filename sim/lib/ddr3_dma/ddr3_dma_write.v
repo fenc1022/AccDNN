@@ -11,41 +11,41 @@ input                   rst,
 
 //ddr3 Interface
 // axi write address
-(* MARK_DEBUG="true" *)output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
-(* MARK_DEBUG="true" *)output     [7:0]                        m_axi_awlen,
-(* MARK_DEBUG="true" *)output     [2:0]                        m_axi_awsize,
-(* MARK_DEBUG="true" *)output     [1:0]                        m_axi_awburst,
-(* MARK_DEBUG="true" *)output     [3:0]                        m_axi_awcache,
-(* MARK_DEBUG="true" *)output reg                              m_axi_awvalid,
-(* MARK_DEBUG="true" *)input                                   m_axi_awready,
-(* MARK_DEBUG="true" *)output     [C_M_AXI_ID_WIDTH-1:0]       m_axi_awid,
-(* MARK_DEBUG="true" *)output                                  m_axi_awlock,
-(* MARK_DEBUG="true" *)output     [2:0]                        m_axi_awprot,
-(* MARK_DEBUG="true" *)output     [3:0]                        m_axi_awqos,
-(* MARK_DEBUG="true" *)output     [0:0]                        m_axi_awuser,
+output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
+output     [7:0]                        m_axi_awlen,
+output     [2:0]                        m_axi_awsize,
+output     [1:0]                        m_axi_awburst,
+output     [3:0]                        m_axi_awcache,
+output reg                              m_axi_awvalid,
+input                                   m_axi_awready,
+output     [C_M_AXI_ID_WIDTH-1:0]       m_axi_awid,
+output                                  m_axi_awlock,
+output     [2:0]                        m_axi_awprot,
+output     [3:0]                        m_axi_awqos,
+output     [0:0]                        m_axi_awuser,
 // axi write data
-(* MARK_DEBUG="true" *)output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
-(* MARK_DEBUG="true" *)output  [C_M_AXI_DATA_WIDTH/8-1:0]      m_axi_wstrb,
-(* MARK_DEBUG="true" *)output                                  m_axi_wlast,
-(* MARK_DEBUG="true" *)output reg                              m_axi_wvalid,
-(* MARK_DEBUG="true" *)input                                   m_axi_wready,
-(* MARK_DEBUG="true" *)output                                  m_axi_wuser,
+output reg [C_M_AXI_DATA_WIDTH-1:0]     m_axi_wdata,
+output  [C_M_AXI_DATA_WIDTH/8-1:0]      m_axi_wstrb,
+output                                  m_axi_wlast,
+output reg                              m_axi_wvalid,
+input                                   m_axi_wready,
+output                                  m_axi_wuser,
 // axi write response
-(* MARK_DEBUG="true" *)input   [1:0]                           m_axi_bresp,
-(* MARK_DEBUG="true" *)input                                   m_axi_bvalid,
-(* MARK_DEBUG="true" *)output                                  m_axi_bready,
-(* MARK_DEBUG="true" *)input   [C_M_AXI_ID_WIDTH:0]            m_axi_bid,
-(* MARK_DEBUG="true" *)input   [0:0]                           m_axi_buser,
-(* MARK_DEBUG="true" *)
+input   [1:0]                           m_axi_bresp,
+input                                   m_axi_bvalid,
+output                                  m_axi_bready,
+input   [C_M_AXI_ID_WIDTH:0]            m_axi_bid,
+input   [0:0]                           m_axi_buser,
+
 //dma Interface
-(* MARK_DEBUG="true" *)input                           write_req,
-(* MARK_DEBUG="true" *)input  [DMA_ADDR_WIDTH-1:0]     write_start_addr,
-(* MARK_DEBUG="true" *)input  [DMA_ADDR_WIDTH-1:0]     write_length,
-(* MARK_DEBUG="true" *)output reg                      write_done,
-(* MARK_DEBUG="true" *)output                          din_rdy,
-(* MARK_DEBUG="true" *)input                           din_en,
-(* MARK_DEBUG="true" *)input  [C_M_AXI_DATA_WIDTH-1:0] din,
-(* MARK_DEBUG="true" *)input                           din_eop
+input                           write_req,
+input  [DMA_ADDR_WIDTH-1:0]     write_start_addr,
+input  [DMA_ADDR_WIDTH-1:0]     write_length,
+output reg                      write_done,
+output                          din_rdy,
+input                           din_en,
+input  [C_M_AXI_DATA_WIDTH-1:0] din,
+input                           din_eop
 );
 
 // Initialize registered output
@@ -54,15 +54,15 @@ begin
   write_done = 1'b0;
 end
 
-(* MARK_DEBUG="true" *)reg [DMA_ADDR_WIDTH-1:0]    write_left;
-(* MARK_DEBUG="true" *)reg                         pre_done;
-(* MARK_DEBUG="true" *)reg                         write_en;
+reg [DMA_ADDR_WIDTH-1:0]    write_left;
+reg                         pre_done;
+reg                         write_en;
 
-(* MARK_DEBUG="true" *)reg           start_single_burst_write = 1'b0;
-(* MARK_DEBUG="true" *)wire          ddr_write_fifo_wen;
-(* MARK_DEBUG="true" *)wire          ddr_write_fifo_empty;
-(* MARK_DEBUG="true" *)wire          ddr_write_fifo_afull;
-(* MARK_DEBUG="true" *)wire [31:0]   unconnected;
+reg           start_single_burst_write = 1'b0;
+wire          ddr_write_fifo_wen;
+wire          ddr_write_fifo_empty;
+wire          ddr_write_fifo_afull;
+wire [31:0]   unconnected;
 
 // Assuming the write_length is always >= 2
 always @ (posedge clk)
@@ -98,16 +98,18 @@ always @ (posedge clk)
 assign	ddr_write_fifo_wen	= din_en & write_en;
 assign	din_rdy				= write_en & ~ddr_write_fifo_afull;
 
+wire [C_M_AXI_DATA_WIDTH-1:0] ddr_write_fifo_dout;
+
 ddr_write_fifo	ddr_write_fifo_inst
 (
     .srst(rst),
     .wr_clk(clk),
     .wr_en(ddr_write_fifo_wen),
-    .din({0, din}),
+    .din(din),
 
     .rd_clk(ddr_clk),
     .rd_en(start_single_burst_write),
-    .dout({unconnected, m_axi_wdata}),
+    .dout({unconnected, ddr_write_fifo_dout}),
 
     .empty(ddr_write_fifo_empty),
     .prog_full(ddr_write_fifo_afull)
@@ -141,12 +143,14 @@ always @(posedge clk)
 begin                                                                   
   if (rst)                                           
     begin                                                            
-      m_axi_awvalid <= 1'b0;                                           
+      m_axi_awvalid <= 1'b0;
+      m_axi_wdata <= 0;
     end                                                              
   // If previously not valid , start next transaction                
   else if (~m_axi_awvalid && start_single_burst_write)                 
     begin                                                            
-      m_axi_awvalid <= 1'b1;                                           
+      m_axi_awvalid <= 1'b1;
+      m_axi_wdata <= ddr_write_fifo_dout;
     end                                                              
   /* Once asserted, VALIDs cannot be deasserted, so axi_awvalid      
   must wait until transaction is accepted */                         

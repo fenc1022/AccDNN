@@ -1,7 +1,7 @@
 module ddr_mode_axi #
 (
     parameter         nCK_PER_CLK             = 4,
-    parameter         APP_ADDR_WIDTH          = 29,
+    parameter         APP_ADDR_WIDTH          = 30,
     parameter         APP_DATA_WIDTH          = 512,
     parameter         APP_MASK_WIDTH          = 64,
 
@@ -54,9 +54,10 @@ module ddr_mode_axi #
 ) 
    (
    input  sys_rst,
+   input  clk,
    // iob<>DDR4 signals
    output                              c0_init_calib_complete,
-   output                              c0_ddr4_ui_clk,
+  //  output                              c0_ddr4_ui_clk,
 
    // Slave Interface Write Address Ports
    input                              c0_ddr4_aresetn,
@@ -106,7 +107,7 @@ module ddr_mode_axi #
   wire c0_ddr4_clk;
   wire c0_init_done;
 
-  assign c0_ddr4_ui_clk = c0_ddr4_clk;
+  // assign c0_ddr4_ui_clk = c0_ddr4_clk;
   assign c0_init_calib_complete = c0_init_done;
 
   wire [APP_ADDR_WIDTH-1:0]              c0_ddr4_app_addr;
@@ -224,7 +225,8 @@ ddr_mode  u_ddr4_sim_top
 .app_rdy             (c0_ddr4_app_rdy),
 .app_wdf_rdy         (c0_ddr4_app_wdf_rdy),
 .clk_ddr             (c0_ddr4_clk),
-.reset               (sys_rst)
+.reset               (sys_rst),
+.clk                 (clk)
 );
 
 endmodule

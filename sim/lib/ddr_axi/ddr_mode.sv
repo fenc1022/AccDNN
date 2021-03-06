@@ -1,9 +1,9 @@
-`timescale 1ps/1ps
+`timescale 1ns/1ns
 
 module ddr_mode
 (
   reset,
-
+  clk, // introduce external clock source so that the system is synchronous
   clk_ddr,
   init_done,
   app_rdy,
@@ -28,7 +28,7 @@ parameter APP_ADDR_WIDTH	= 30;
 
 
 input                           reset;
-
+input							clk;
 output                          clk_ddr;
 output                          init_done;
 
@@ -74,8 +74,8 @@ end
 */
 
 
-
-reg								clk_ddr;
+wire							clk_ddr;
+//reg								clk_ddr;
 reg								init_done;
 reg								app_rdy;
 reg	   [APP_DATA_WIDTH-1:0]		app_rd_data;
@@ -83,7 +83,7 @@ reg								app_rd_data_end;
 reg								app_rd_data_valid;
 reg								app_wdf_rdy;
 
-
+assign clk_ddr = clk;
 
 
 reg		[31:0]		time_click;
@@ -94,7 +94,7 @@ bit		[APP_ADDR_WIDTH+31:0]	app_read_queue [$];
 
 initial
 begin
-	clk_ddr	= 0;
+//	clk_ddr	= 0;
 	time_click = 0;
 	fork
 		gen_clk ();
@@ -102,7 +102,7 @@ begin
 		receive_wdf ();
 		read_thread ();
 		write_thread ();
-		forever #5ns time_click = time_click + 1; 
+		forever #100ns time_click = time_click + 1; 
 	join
 end
 
@@ -117,11 +117,11 @@ task gen_clk ();
 	app_rdy = 0;
 	app_wdf_rdy = 0;
 
-	while (1)
-	begin
-		# 2.5ns clk_ddr = ~clk_ddr;
-		init_done = 1;
-	end
+	// while (1)
+	// begin
+	// 	# 50ns clk_ddr = ~clk_ddr;
+	 	init_done = 1;
+	// end
 endtask
 
 task receive_cmd ();
