@@ -4,7 +4,7 @@
 # AccDNN Function Mode
 # Set to True when only needs to simulation.
 # Keep it False, if you need to generated FPGA bit/bin file.
-SIMULATION_ONLY = True
+SIMULATION_ONLY = False
 
 # Default Batch Size
 # Could be changed throguh the command line.
@@ -24,7 +24,7 @@ XILINX_FPGA_TYPE = 'xczu7ev-ffvc1156-2-e'
 # The real frequency depends on the clock provided framework.
 # AccDNN provides a sync logic implementation, the user should 
 # provide the clock input.
-CLOCK_FREQUENCY = 200.0
+CLOCK_FREQUENCY = 300.0
 
 # Distributed Memory settings
 # Set True to enable distributed memory.
@@ -115,7 +115,7 @@ IP_PROJECT_NAME = 'ips_prj'
 # Path of ips project
 IP_PROJECT_PATH =  OUTPUT_PATH + '/' + IP_PROJECT_NAME
 # Path of set ips cores
-IP_FILE_PATH = IP_PROJECT_PATH + '/' + IP_PROJECT_NAME + '.srcs' + '/sources_1/ip'
+IP_FILE_PATH = IP_PROJECT_PATH + '/' + IP_PROJECT_NAME + '.gen' + '/sources_1/ip'
 
 # ****************************************************************
 # AccDNN I/O settings

@@ -96,3 +96,16 @@ def mat_dump_int(file_path_name, mat, dw, dq):
     fd = open(file_path_name, 'w')
     fd.write(data_str)
     fd.close()
+
+def mat_dump_bin(file_path_name, mat, dw, dq):
+    if mat.ndim != 1:
+        print "Input mat dimension is not 1, will reshape to 1."
+        mat = mat.reshape(-1)
+    mat = _quantize(mat, dw, dq, False)
+    
+    fd = open(file_path_name, 'wb')
+    for data in mat:
+    #write in 16bit unsigned int
+        fd.write(np.ushort(data))
+    
+    fd.close()

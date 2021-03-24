@@ -505,11 +505,11 @@ class Model(caffe.Net):
         fd.write(file_list_str)
         fd.close()
 
-        if SIMULATION_ONLY is True:
-            file_path_name = SIM_FILE_LIST_PATH + '/' + 'sim_file.f'
-            fd = open(file_path_name, 'w')
-            fd.write(sim_file_str)
-            fd.close()
+        # if SIMULATION_ONLY is True:
+        file_path_name = SIM_FILE_LIST_PATH + '/' + 'sim_file.f'
+        fd = open(file_path_name, 'w')
+        fd.write(sim_file_str)
+        fd.close()
    
         file_path_name = FILE_LIST_PATH + '/' + 'imp_file.f'
         fd = open(file_path_name, 'w')
@@ -549,11 +549,11 @@ class Model(caffe.Net):
         for mif_file in mif_file_list:
             mif_file_str += mif_file + '\n'
        
-        if SIMULATION_ONLY is True:
-            file_path_name = SIM_FILE_LIST_PATH + '/' + 'mif_file.f'
-            fd = open(file_path_name, 'w')
-            fd.write(mif_file_str)
-            fd.close()
+        # if SIMULATION_ONLY is True:
+        file_path_name = SIM_FILE_LIST_PATH + '/' + 'mif_file.f'
+        fd = open(file_path_name, 'w')
+        fd.write(mif_file_str)
+        fd.close()
 
     def ios_generate(self, ddr_data_width = DDR_DATA_WIDTH):
         self.ios = {}

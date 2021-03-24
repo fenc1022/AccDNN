@@ -5,8 +5,7 @@ fi
 mkdir ./sim/src
 
 vivado -mode batch -source ./build/ips.tcl -notrace
-wait
-cp -rf ./build/ips_prj/ips_prj.gen/sources_1 ./build/ips_prj/ips_prj.srcs
+
 #copy the simulations file to the src file
 while read line
 do

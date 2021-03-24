@@ -34,11 +34,16 @@ input                                 rst;
 
 (* MARK_DEBUG="true" *)reg [15:0] din_cnt;
 (* MARK_DEBUG="true" *)reg auto_pad;
+
+wire blob_din_en_rdy;
+
+assign blob_din_en_rdy = blob_din_en & blob_din_rdy;
+
 always @ (posedge clk)
 begin
   if(rst)
     din_cnt <= 16'b0;
-  else if(blob_din_en | auto_pad)
+  else if(blob_din_en_rdy | auto_pad)
     begin
       if(din_cnt == IN_COUNT - 1)
         din_cnt <= 16'b0;
@@ -56,7 +61,7 @@ begin
     auto_pad <= 0;
   else if(din_cnt == IN_COUNT - 1)
     auto_pad <= 0;
-  else if(blob_din_en & blob_din_eop)
+  else if(blob_din_en_rdy & blob_din_eop)
     auto_pad <= 1;
   else
     auto_pad <= auto_pad;
@@ -103,7 +108,7 @@ generate
         begin
           if(rst)
             din_tmp <= 0;
-          else if(blob_din_en | auto_pad)
+          else if(blob_din_en_rdy | auto_pad)
             din_tmp <= blob_din;
           else if(blob_dout_en)
             din_tmp <= (din_tmp >> OUT_WIDTH);
@@ -116,7 +121,7 @@ generate
         begin
           if(rst)
             din_tmp <= 0;
-          else if(blob_din_en | auto_pad)
+          else if(blob_din_en_rdy | auto_pad)
             din_tmp <= {blob_din, din_tmp[COM_MUL-1:IN_WIDTH]};
           else if(blob_dout_en)
             din_tmp <= (din_tmp >> OUT_WIDTH);
@@ -131,7 +136,7 @@ always @ (posedge clk)
 begin
   if (rst)
      last_blob_din <= 1'b0;
-  else if (blob_din_en | auto_pad)
+  else if (blob_din_en_rdy | auto_pad)
      last_blob_din <= blob_din_eop_pad;
   else
      last_blob_din <= last_blob_din;
@@ -155,7 +160,7 @@ always @ (posedge clk)
 begin
   if(rst)
     read_write_sel <= 1'b0;
-  else if((blob_din_en | auto_pad) & (din_cnt == IN_COUNT-1) & (~trunc_en)) 
+  else if((blob_din_en_rdy | auto_pad) & (din_cnt == IN_COUNT-1) & (~trunc_en)) 
     read_write_sel <= 1'b1;
   else if(blob_dout_en & ((dout_cnt == OUT_COUNT-1) | (dout_cnt_total == N-1)))
     read_write_sel <= 1'b0;
