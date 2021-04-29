@@ -178,9 +178,8 @@ class Convolution(Layer):
 
         # compute batch normalization parameters
         if self.bn:
-            print self.bn[1]
-            bn_scale = self.bn[2] / np.sqrt(self.bn[1] + 1e-10)
-            bn_bias = self.bn[3] - self.bn[0] * self.bn[2] / np.sqrt(self.bn[1] + 1e-10)
+            bn_scale = 1 / np.sqrt(self.bn[1] + 1e-10) # self.bn[2] / np.sqrt(self.bn[1] + 1e-10)
+            bn_bias = - self.bn[0] / np.sqrt(self.bn[1] + 1e-10) # self.bn[3] - self.bn[0] * self.bn[2] / np.sqrt(self.bn[1] + 1e-10)
             #print bn_scale, bn_bias
             # search the best quantization for scale and bias
             self.bn_scale_dq = int(math.floor(math.log(1.0/np.max(np.abs(bn_scale))) / math.log(2.0))) + 15

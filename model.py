@@ -384,8 +384,7 @@ class Model(caffe.Net):
                                      module_inst.rm_blks + module_inst.wm_blks + module_inst.bm_blks))
                 optim_info.append(pack_optim_info(module_inst.layer_name, 
                                     module_inst.cpf if hasattr(module_inst, 'cpf') else None, module_inst.kpf))
-            total_ddr_bandwidth += module_inst.ddr_bandwidth * CLOCK_FREQUENCY * module_inst.clocks / max_clocks
-  
+            total_ddr_bandwidth += module_inst.ddr_bandwidth * CLOCK_FREQUENCY * module_inst.clocks / max_clocks  
         print '----------------------'
         print (format_str%('total', ' ', ' ', ' ', str(total_macs), 
                str(total_dsps) + '(%.1f%%)'%(float(total_dsps)/get_dsps_resource(res_file)*100.0), 

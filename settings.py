@@ -68,7 +68,7 @@ RESOURCE_WARNING_THRES = 0.9
 MAX_DW = 16
 # Default weights/activations width
 # Ignored if the model file provides the quantization information.
-DW = 16
+DW = 8
 # Default Q of the weights, Q13
 # Ignored if the model file provides the quantization information.
 WQ = 13

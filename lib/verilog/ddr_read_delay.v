@@ -364,77 +364,77 @@ output				layer_ddr_dout_eop_14_o;
 
 output				engine_ddr_read_req_0_o;
 output	[26:0]		engine_ddr_read_length_0_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_0_o;
+output	[26:0]		engine_ddr_read_addr_0_o;
 input				engine_ddr_read_ack_0_i;
 
 output				engine_ddr_read_req_1_o;
 output	[26:0]		engine_ddr_read_length_1_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_1_o;
+output	[26:0]		engine_ddr_read_addr_1_o;
 input				engine_ddr_read_ack_1_i;
 
 output				engine_ddr_read_req_2_o;
 output	[26:0]		engine_ddr_read_length_2_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_2_o;
+output	[26:0]		engine_ddr_read_addr_2_o;
 input				engine_ddr_read_ack_2_i;
 
 output				engine_ddr_read_req_3_o;
 output	[26:0]		engine_ddr_read_length_3_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_3_o;
+output	[26:0]		engine_ddr_read_addr_3_o;
 input				engine_ddr_read_ack_3_i;
 
 output				engine_ddr_read_req_4_o;
 output	[26:0]		engine_ddr_read_length_4_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_4_o;
+output	[26:0]		engine_ddr_read_addr_4_o;
 input				engine_ddr_read_ack_4_i;
 
 output				engine_ddr_read_req_5_o;
 output	[26:0]		engine_ddr_read_length_5_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_5_o;
+output	[26:0]		engine_ddr_read_addr_5_o;
 input				engine_ddr_read_ack_5_i;
 
 output				engine_ddr_read_req_6_o;
 output	[26:0]		engine_ddr_read_length_6_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_6_o;
+output	[26:0]		engine_ddr_read_addr_6_o;
 input				engine_ddr_read_ack_6_i;
 
 output				engine_ddr_read_req_7_o;
 output	[26:0]		engine_ddr_read_length_7_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_7_o;
+output	[26:0]		engine_ddr_read_addr_7_o;
 input				engine_ddr_read_ack_7_i;
 
 output				engine_ddr_read_req_8_o;
 output	[26:0]		engine_ddr_read_length_8_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_8_o;
+output	[26:0]		engine_ddr_read_addr_8_o;
 input				engine_ddr_read_ack_8_i;
 
 output				engine_ddr_read_req_9_o;
 output	[26:0]		engine_ddr_read_length_9_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_9_o;
+output	[26:0]		engine_ddr_read_addr_9_o;
 input				engine_ddr_read_ack_9_i;
 
 output				engine_ddr_read_req_10_o;
 output	[26:0]		engine_ddr_read_length_10_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_10_o;
+output	[26:0]		engine_ddr_read_addr_10_o;
 input				engine_ddr_read_ack_10_i;
 
 output				engine_ddr_read_req_11_o;
 output	[26:0]		engine_ddr_read_length_11_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_11_o;
+output	[26:0]		engine_ddr_read_addr_11_o;
 input				engine_ddr_read_ack_11_i;
 
 output				engine_ddr_read_req_12_o;
 output	[26:0]		engine_ddr_read_length_12_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_12_o;
+output	[26:0]		engine_ddr_read_addr_12_o;
 input				engine_ddr_read_ack_12_i;
 
 output				engine_ddr_read_req_13_o;
 output	[26:0]		engine_ddr_read_length_13_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_13_o;
+output	[26:0]		engine_ddr_read_addr_13_o;
 input				engine_ddr_read_ack_13_i;
 
 output				engine_ddr_read_req_14_o;
 output	[26:0]		engine_ddr_read_length_14_o;
-(*mark_debug = "true"*)output	[26:0]		engine_ddr_read_addr_14_o;
+output	[26:0]		engine_ddr_read_addr_14_o;
 input				engine_ddr_read_ack_14_i;
 
 input	[15:0]		engine_ddr_dout_en_i;
@@ -479,18 +479,18 @@ assign engine_ddr_read_addr_14_o	= layer_ddr_read_addr_14_i;
 
 
 
-(*mark_debug = "true"*)reg		[14:0]		ddr_read_ack_d1;
-(*mark_debug = "true"*)reg		[15:0]		ddr_dout_en_d1;
-(*mark_debug = "true"*)reg		[DDR_DATA_WIDTH-1:0]		ddr_dout_d1;
-(*mark_debug = "true"*)reg					ddr_dout_eop_d1;
+reg		[14:0]		ddr_read_ack_d1;
+reg		[15:0]		ddr_dout_en_d1;
+reg		[DDR_DATA_WIDTH-1:0]		ddr_dout_d1;
+reg					ddr_dout_eop_d1;
 
-(*mark_debug = "true"*)reg		[14:0]		ddr_read_ack_d2;
-(*mark_debug = "true"*)reg		[15:0]		ddr_dout_en_d2;
-(*mark_debug = "true"*)reg		[DDR_DATA_WIDTH-1:0]		ddr_dout_d2;
-(*mark_debug = "true"*)reg					ddr_dout_eop_d2;
+reg		[14:0]		ddr_read_ack_d2;
+reg		[15:0]		ddr_dout_en_d2;
+reg		[DDR_DATA_WIDTH-1:0]		ddr_dout_d2;
+reg					ddr_dout_eop_d2;
 
-(*mark_debug = "true"*)reg		[14:0]		ddr_read_req_d1;
-(*mark_debug = "true"*)reg		[14:0]		ddr_read_req_d2;
+reg		[14:0]		ddr_read_req_d1;
+reg		[14:0]		ddr_read_req_d2;
 
 always @ (posedge clk)
 begin

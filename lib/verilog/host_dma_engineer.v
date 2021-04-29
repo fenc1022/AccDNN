@@ -16,35 +16,35 @@ input                                   model_start,
 input   [31:0]                          image_num,
 input   [C_M_AXI_ADDR_WIDTH-1:0]        host_weights_addr,
 input   [C_M_AXI_ADDR_WIDTH-1:0]        host_src_addr,
-input   [C_M_AXI_ADDR_WIDTH-1:0]        host_dst_addr,
+(*mark_debug="true"*)input   [C_M_AXI_ADDR_WIDTH-1:0]        host_dst_addr,
 // axi master Interface
 input                   m_axi_aresetn,
 // axi write address
-output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
+(*mark_debug="true"*)output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_awaddr,
 output  [7:0]                           m_axi_awlen,
 output  [2:0]                           m_axi_awsize,
 output  [1:0]                           m_axi_awburst,
 output  [3:0]                           m_axi_awcache,
-output reg                              m_axi_awvalid,
+(*mark_debug="true"*)output reg                              m_axi_awvalid,
 output  [C_M_AXI_ID_WIDTH-1:0]          m_axi_awid,
 output                                  m_axi_awlock,
 output  [2:0]                           m_axi_awprot,
 output  [3:0]                           m_axi_awqos,
 output                                  m_axi_awuser,
-input                                   m_axi_awready,
+(*mark_debug="true"*)input                                   m_axi_awready,
 // axi write data
-output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
+(*mark_debug="true"*)output  [C_M_AXI_DATA_WIDTH-1:0]        m_axi_wdata,
 output  [C_M_AXI_DATA_WIDTH/8-1:0]      m_axi_wstrb,
-output                                  m_axi_wlast,
-output reg                              m_axi_wvalid,
+(*mark_debug="true"*)output                                  m_axi_wlast,
+(*mark_debug="true"*)output reg                              m_axi_wvalid,
 output                                  m_axi_wuser,
-input                                   m_axi_wready,
+(*mark_debug="true"*)input                                   m_axi_wready,
 // axi write response
-input   [1:0]                           m_axi_bresp,
-input                                   m_axi_bvalid,
+(*mark_debug="true"*)input   [1:0]                           m_axi_bresp,
+(*mark_debug="true"*)input                                   m_axi_bvalid,
 input   [C_M_AXI_ID_WIDTH-1:0]          m_axi_bid,
 input                                   m_axi_buser,
-output                                  m_axi_bready,
+(*mark_debug="true"*)output                                  m_axi_bready,
 // axi read address
 output reg [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
 output  [7:0]                           m_axi_arlen,
@@ -68,10 +68,10 @@ input                                   m_axi_ruser,
 output                                  m_axi_rready,
 
 // blob interface
-input	                                  blob_dout_eop,
-input  [C_M_AXI_DATA_WIDTH-1:0]	        blob_dout,
-input	                                  blob_dout_en,
-output	                                blob_dout_rdy,
+(*mark_debug="true"*)input	                                  blob_dout_eop,
+(*mark_debug="true"*)input  [C_M_AXI_DATA_WIDTH-1:0]	        blob_dout,
+(*mark_debug="true"*)input	                                  blob_dout_en,
+(*mark_debug="true"*)output	                                blob_dout_rdy,
 
 output                                  blob_din_eop,
 output     [C_M_AXI_DATA_WIDTH-1:0]     blob_din,
@@ -87,19 +87,19 @@ output                                  ddr_din_eop
 );
 
 
-wire                            host_write_fifo_empty;
-wire                            host_write_fifo_full;
+(*mark_debug="true"*)wire                            host_write_fifo_empty;
+(*mark_debug="true"*)wire                            host_write_fifo_full;
 wire  [C_M_AXI_DATA_WIDTH-1:0]  host_write_fifo_dout;
-reg                             start_single_burst_write = 1'b0;
-reg     model_start_q;
-reg     model_start_rise;
+(*mark_debug="true"*)reg                             start_single_burst_write = 1'b0;
+(*mark_debug="true"*)reg     model_start_q;
+(*mark_debug="true"*)reg     model_start_rise;
 reg     load_weights_q;
 reg     load_weights_rise;
-reg     is_weights = 1'b0;  // 1: transfer weight to ddr; 0: transfer blob to model
-integer burst_left = 0;
-integer cycle_cnt = 0;
-reg     start_single_burst_read = 1'b0;
-reg     burst_read_active = 1'b0;
+(*mark_debug="true"*)reg     is_weights = 1'b0;  // 1: transfer weight to ddr; 0: transfer blob to model
+(*mark_debug="true"*)integer burst_left = 0;
+(*mark_debug="true"*)integer cycle_cnt = 0;
+(*mark_debug="true"*)reg     start_single_burst_read = 1'b0;
+(*mark_debug="true"*)reg     burst_read_active = 1'b0;
 
 host_write_fifo	host_write_fifo_inst
 (
@@ -218,14 +218,18 @@ begin
   else
     burst_left <= burst_left;
   
+  // Count how many cycle left to tansfer weights or a single image
   if(~m_axi_aresetn)
-    cycle_cnt <= 0;
+    cycle_cnt <= 0; 
   else if (model_start_rise)
-    cycle_cnt <= `TOTAL_INPUT_COUNT * image_num;
+    cycle_cnt <= `TOTAL_INPUT_COUNT;
   else if (load_weights_rise)
     cycle_cnt <= `TOTAL_WEIGHT_COUNT;
   else if (m_axi_rvalid && m_axi_rready)
-    cycle_cnt <= cycle_cnt - 1;
+    if ((cycle_cnt == 1) & (!is_weights))
+      cycle_cnt <= `TOTAL_INPUT_COUNT;
+    else
+      cycle_cnt <= cycle_cnt - 1;
   else
     cycle_cnt <= cycle_cnt;
 

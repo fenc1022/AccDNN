@@ -73,6 +73,8 @@ add_files {
    ./../../build/src/conv1_layer.v
    ./../../build/src/conv2_layer.v
    ./../../build/src/conv3_layer.v
+   ./../../build/src/conv4_layer.v
+   ./../../build/src/conv5_layer.v
    ./../../lib/verilog/ctrl_regs.v
    ./../../sim/lib/ddr3_dma/ddr3_dma_engineer.v
    ./../../sim/lib/ddr3_dma/ddr3_dma_read.v
@@ -80,40 +82,53 @@ add_files {
    ./../../lib/verilog/ddr_read_delay.v
    ./../../lib/verilog/delay.v
    ./../../lib/verilog/host_dma_engineer.v
-   ./../../build/src/ip1_layer.v
-   ./../../build/src/ip2_layer.v
+   ./../../build/src/fc6_layer.v
+   ./../../build/src/fc7_layer.v
+   ./../../build/src/fc8_layer.v
    ./../../build/src/model.v
    ./../../lib/verilog/multiplier.v
    ./../../build/src/pool1_layer.v
    ./../../build/src/pool2_layer.v
-   ./../../build/src/pool3_layer.v
+   ./../../build/src/pool5_layer.v
    ./../../lib/verilog/vector_max.v
    ./../../lib/verilog/acc_addr.sv
    ./../../lib/verilog/vector_muladd.sv
    ./../../lib/verilog/model_dma.v
-   ./../../build/coe/ip2_bm_ram.coe
-   ./../../build/coe/ip1_bm_ram.coe
+   ./../../build/coe/fc8_bm_ram.coe
+   ./../../build/coe/fc7_bm_ram.coe
+   ./../../build/coe/fc6_bm_ram.coe
+   ./../../build/coe/conv5_bm_ram.coe
+   ./../../build/coe/conv4_bm_ram.coe
    ./../../build/coe/conv3_bm_ram.coe
    ./../../build/coe/conv2_bm_ram.coe
    ./../../build/coe/conv1_bm_ram.coe
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_rm_ram/conv2_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip2_wm_ram/ip2_wm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip1_bm_ram/ip1_bm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_bm_ram/conv3_bm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_bm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip1_wm_ram/ip1_wm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip2_bm_ram/ip2_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_bm_ram/conv1_bm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/pool3_rm_ram/pool3_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/pool1_rm_ram/pool1_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_wm_ram/conv2_wm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_rm_ram/conv1_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_wm_ram/conv1_wm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip2_rm_ram/ip2_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_wm_ram/conv2_wm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_bm_ram/conv3_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_rm_ram/conv3_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/ip1_rm_ram/ip1_rm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_wm_ram/conv3_wm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/pool2_rm_ram/pool2_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv4_bm_ram/conv4_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv4_rm_ram/conv4_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv4_wm_ram/conv4_wm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv5_bm_ram/conv5_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc6_bm_ram/fc6_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc6_rm_ram/fc6_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc6_wm_ram/fc6_wm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc7_bm_ram/fc7_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc7_wm_ram/fc7_wm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc8_bm_ram/fc8_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc8_rm_ram/fc8_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc8_wm_ram/fc8_wm_ram.xci
+   ./../../lib/verilog/conv1_wm_ram.v
+   ./../../lib/verilog/conv2_rm_ram.v
+   ./../../lib/verilog/conv3_wm_ram.v
+   ./../../lib/verilog/conv5_rm_ram.v
+   ./../../lib/verilog/conv5_wm_ram.v
+   ./../../lib/verilog/pool1_rm_ram.v
+   ./../../lib/verilog/pool2_rm_ram.v
+   ./../../lib/verilog/pool5_rm_ram.v
+   ./../../lib/verilog/fc7_rm_ram.v
 }
 
 close_project

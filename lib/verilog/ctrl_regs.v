@@ -5,9 +5,11 @@
 `define ACCDNN_CTRL_LOAD_MASK   32'h00000002  /* Start load weight */
 `define ACCDNN_CTRL_EINT_MASK   32'h00000004  /* Enable interrupt */
 `define ACCDNN_CTRL_RST_MASK    32'h00000008  /* Reset module */
-`define ACCDNN_STAT_RDY_MASK    32'h00000001  /* module is ready to run */
-`define ACCDNN_STAT_BUSY_MASK   32'h00000002  /* Processing */
-`define ACCDNN_STAT_DONE_MASK   32'h00000004  /* Inference finish */
+`define ACCDNN_STAT_HASWGT_MASK 32'h00000001  /* Weights has been loaded */
+`define ACCDNN_STAT_HASNUM_MASK 32'h00000002  /* Image number has been set */
+`define ACCDNN_STAT_BUSY_MASK   32'h00000004  /* Processing */
+`define ACCDNN_STAT_RDY_MASK    32'h00000008  /* HASWGT & HASNUM & !BUSY */
+`define ACCDNN_STAT_DONE_MASK   32'h00000010  /* Inference finish */
 
     module ctrl_regs #
     (
@@ -115,7 +117,6 @@
 
 (* MARK_DEBUG="true" *)    reg     is_weight_loaded = 1'b0;
 (* MARK_DEBUG="true" *)    reg     is_img_numbered = 1'b0;
-(* MARK_DEBUG="true" *)    reg     is_infer_started = 1'b0;
 (* MARK_DEBUG="true" *)    reg     is_task_finished = 1'b0;
     reg     inference_done_q;
     reg     inference_done_rise;
@@ -325,19 +326,11 @@
       else 
         begin
           // Status register update
-          case (state)
-            ST_RST:
-              slv_reg1 <= 0;
-            ST_INT:
-              slv_reg1 <= 0;
-            ST_RDY:
-              slv_reg1 <= `ACCDNN_STAT_RDY_MASK |
-                          ( is_task_finished ? `ACCDNN_STAT_DONE_MASK : 0);
-            ST_RUN:
-              slv_reg1 <= `ACCDNN_STAT_BUSY_MASK;
-            default:
-              slv_reg1 <= 0;
-          endcase
+          slv_reg1 <= (`ACCDNN_STAT_HASWGT_MASK & {32{is_weight_loaded}}) |
+                      (`ACCDNN_STAT_HASNUM_MASK & {32{is_img_numbered}}) |
+                      (`ACCDNN_STAT_BUSY_MASK & {32{state == ST_RUN}}) |
+                      (`ACCDNN_STAT_RDY_MASK & {32{is_weight_loaded & is_img_numbered & (state != ST_RUN)}}) |
+                      (`ACCDNN_STAT_DONE_MASK & {32{is_task_finished}});
 
           if (slv_reg_wren)
             begin
@@ -773,7 +766,6 @@
         state <= ST_RST;
         is_weight_loaded <= 1'b0;
         is_img_numbered <= 1'b0;
-        is_infer_started <= 1'b0;
         is_task_finished <= 1'b0;
         eop_count <= 0;
       end
@@ -782,7 +774,6 @@
           ST_RST : begin
             is_weight_loaded <= 1'b0;
             is_img_numbered <= 1'b0;
-            is_infer_started <= 1'b0;
             is_task_finished <= 1'b0;
             eop_count <= 0;
 
@@ -796,7 +787,6 @@
               is_weight_loaded <= 1'b1;
             
             is_img_numbered <= (image_num != 0);
-            is_infer_started <= 1'b0;
             is_task_finished <= 1'b0;
             eop_count <= 0;
 
@@ -809,7 +799,6 @@
           end
           ST_RDY : begin
             if (inference_start) begin
-              is_infer_started <= 1'b1;
               is_task_finished <= 1'b0;
             end
 
@@ -823,7 +812,7 @@
 
             if (!(is_weight_loaded && is_img_numbered))
               state <= ST_INT;
-            else if (is_infer_started)
+            else if (inference_start)
               state <= ST_RUN;
             else
               state <= ST_RDY;
@@ -834,12 +823,9 @@
             
             if (inference_done_rise)
               eop_count <= eop_count + 1;
-            else if (eop_count == image_num)
-              eop_count <= 0;
             
             is_weight_loaded <= 1'b1;
             is_img_numbered <= 1'b1;
-            is_infer_started <= 1'b1;
             
             if (is_task_finished)
               state <= ST_RDY;
