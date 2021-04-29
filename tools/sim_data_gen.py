@@ -6,7 +6,7 @@ import caffe
 import numpy as np
 import argparse
 from settings import *
-from util.data import mat_dump_bin, mat_dump_int, mat_dump_float, mat2uint16, uint16_dump_hex_aligned
+from util.data import mat_dump_bin, uint8_dump_bin, mat_dump_int, mat_dump_float, mat2uint16, mat2uint8, uint16_dump_hex_aligned, uint8_dump_hex_aligned
 import model
 
 def sim_data_gen(model_file, pretrained_model, imagepath, batch_size, iteration):
@@ -53,17 +53,17 @@ def sim_data_gen(model_file, pretrained_model, imagepath, batch_size, iteration)
                 blob_data_shaped = np.append(blob_data_shaped, \
                     np.zeros(data_align - len(blob_data_shaped) % data_align, dtype=float))
 
-            blob_data_shaped_uint16 = mat2uint16(blob_data_shaped, model_inst.modules[0].input_dw,  model_inst.modules[0].input_dq)
-            blob_data_shaped_uint16_iteration = np.array([])
+            blob_data_shaped_uint8 = mat2uint8(blob_data_shaped, model_inst.modules[0].input_dw,  model_inst.modules[0].input_dq)
+            blob_data_shaped_uint8_iteration = np.array([])
             for iter_index in range(iteration):
-                blob_data_shaped_uint16_iteration = np.append(blob_data_shaped_uint16_iteration, blob_data_shaped_uint16)
-            blob_data_shaped_uint16_iteration = blob_data_shaped_uint16_iteration.reshape(-1, data_align)
+                blob_data_shaped_uint8_iteration = np.append(blob_data_shaped_uint8_iteration, blob_data_shaped_uint8)
+            blob_data_shaped_uint8_iteration = blob_data_shaped_uint8_iteration.reshape(-1, data_align)
             
             file_path_name = DUMP_BLOB_DATA_PATH + '/input_sim.dat'
-            uint16_dump_hex_aligned(file_path_name, blob_data_shaped_uint16_iteration)
+            uint8_dump_hex_aligned(file_path_name, blob_data_shaped_uint8_iteration)
 
             file_path_name = DUMP_BLOB_DATA_PATH + '/input.bin'
-            mat_dump_bin(file_path_name, blob_data_shaped, model_inst.modules[0].input_dw,  model_inst.modules[0].input_dq)
+            uint8_dump_bin(file_path_name, blob_data_shaped_uint8_iteration)
 
             file_path_name = DUMP_BLOB_DATA_PATH + '/input.jpg'
             mat_dump_int(file_path_name, blob_data_shaped, model_inst.modules[0].input_dw,  model_inst.modules[0].input_dq)

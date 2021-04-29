@@ -53,6 +53,12 @@ def mat2uint16(mat, dw, dq):
      mat = [_bool2int(x, dw) for x in mat]
      return np.array(mat)
 
+def mat2uint8(mat, dw, dq):
+     mat = _quantize(mat, dw, dq)
+     mat = mat.reshape(-1, 8/dw)
+     mat = [_bool2int(x, dw) for x in mat]
+     return np.array(mat)
+
 def uint16_dump_hex_aligned(file_path_name, mat):
     if mat.ndim != 2:
         raise Exception("Memory matric dimension is not 2.")
@@ -61,6 +67,21 @@ def uint16_dump_hex_aligned(file_path_name, mat):
         row_str = ''
         for col in row:
             row_str = '%04X'%(col) + row_str
+        row_str += '\n'
+        coe_str += row_str
+    #write to coe file
+    fd = open(file_path_name, 'w')
+    fd.write(coe_str)
+    fd.close()
+
+def uint8_dump_hex_aligned(file_path_name, mat):
+    if mat.ndim != 2:
+        raise Exception("Memory matric dimension is not 2.")
+    coe_str = ''
+    for row in mat:
+        row_str = ''
+        for col in row:
+            row_str = '%02X'%(col) + row_str
         row_str += '\n'
         coe_str += row_str
     #write to coe file
@@ -105,7 +126,21 @@ def mat_dump_bin(file_path_name, mat, dw, dq):
     
     fd = open(file_path_name, 'wb')
     for data in mat:
-    #write in 16bit unsigned int
-        fd.write(np.ushort(data))
+    # #write in 16bit unsigned int
+    #     fd.write(np.ushort(data))
+    #write in 8bit unsigned int
+        fd.write(np.ubyte(data))
+    fd.close()
+
+def uint8_dump_bin(file_path_name, mat):
+    if mat.ndim != 1:
+        print "Input mat dimension is not 1, will reshape to 1."
+        mat = mat.reshape(-1)
     
+    fd = open(file_path_name, 'wb')
+    for data in mat:
+    # #write in 16bit unsigned int
+    #     fd.write(np.ushort(data))
+    #write in 8bit unsigned int
+        fd.write(np.ubyte(data))
     fd.close()

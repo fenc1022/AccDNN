@@ -105,6 +105,7 @@ add_files {
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_bm_ram/conv1_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_rm_ram/conv1_rm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_bm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_rm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_wm_ram/conv2_wm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_bm_ram/conv3_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_rm_ram/conv3_rm_ram.xci
@@ -121,7 +122,6 @@ add_files {
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc8_rm_ram/fc8_rm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/fc8_wm_ram/fc8_wm_ram.xci
    ./../../lib/verilog/conv1_wm_ram.v
-   ./../../lib/verilog/conv2_rm_ram.v
    ./../../lib/verilog/conv3_wm_ram.v
    ./../../lib/verilog/conv5_rm_ram.v
    ./../../lib/verilog/conv5_wm_ram.v
