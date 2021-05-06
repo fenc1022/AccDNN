@@ -1,7 +1,6 @@
 module ddr3_dma_read #(
   parameter DMA_ADDR_WIDTH = 27,
   parameter C_M_AXI_ID_WIDTH = 4,
-  parameter C_M_AXI_BURST_LEN = 1, // Only support 1 for now
   parameter C_M_AXI_ADDR_WIDTH = 32,
   parameter C_M_AXI_DATA_WIDTH = 512
 ) (
@@ -12,32 +11,32 @@ input                   rst,
 input                   init_calib_complete,
 input                   axi_aresetn,
 // axi read address
-output     [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
-output     [7:0]                        m_axi_arlen,
+(* MARK_DEBUG="true" *)output     [C_M_AXI_ADDR_WIDTH-1:0]     m_axi_araddr,
+(* MARK_DEBUG="true" *)output     [7:0]                        m_axi_arlen,
 output     [2:0]                        m_axi_arsize,
 output     [1:0]                        m_axi_arburst,
 output     [3:0]                        m_axi_arcache,
-output                                  m_axi_arvalid,
-input                                   m_axi_arready,
+(* MARK_DEBUG="true" *)output                                  m_axi_arvalid,
+(* MARK_DEBUG="true" *)input                                   m_axi_arready,
 output     [C_M_AXI_ID_WIDTH-1:0]       m_axi_arid,
 output                                  m_axi_arlock,
 output     [2:0]                        m_axi_arprot,
 output     [3:0]                        m_axi_arqos,
 output     [0:0]                        m_axi_aruser,
 // axi read data
-input   [C_M_AXI_DATA_WIDTH-1:0]        m_axi_rdata,
+(* MARK_DEBUG="true" *)input   [C_M_AXI_DATA_WIDTH-1:0]        m_axi_rdata,
 input   [1:0]                           m_axi_rresp,
-input                                   m_axi_rlast,
-input                                   m_axi_rvalid,
-output                                  m_axi_rready,
+(* MARK_DEBUG="true" *)input                                   m_axi_rlast,
+(* MARK_DEBUG="true" *)input                                   m_axi_rvalid,
+(* MARK_DEBUG="true" *)output                                  m_axi_rready,
 input   [C_M_AXI_ID_WIDTH:0]            m_axi_rid,
 input   [0:0]                           m_axi_ruser,
 
 //dma Interface
-input                                   dout_rdy,
-output reg [C_M_AXI_DATA_WIDTH-1:0]     dout,
-output reg [15:0]                       dout_en,
-output reg                              dout_eop,
+(* MARK_DEBUG="true" *)input                                   dout_rdy,
+(* MARK_DEBUG="true" *)output reg [C_M_AXI_DATA_WIDTH-1:0]     dout,
+(* MARK_DEBUG="true" *)output reg [15:0]                       dout_en,
+(* MARK_DEBUG="true" *)output reg                              dout_eop,
 
 input                           read_req_0,
 input  [DMA_ADDR_WIDTH-1:0]     read_start_addr_0,
@@ -124,6 +123,7 @@ output reg                      read_ack_15
 
 localparam WIDTH = 16;
 // localparam MAX_ACK_DELAY = 4;
+localparam MAX_ARLEN = 256;
 
 // Initialize registered output
 initial
@@ -253,14 +253,13 @@ begin
   read_ack_15   <= read_ack_reg[15];
 end
 
-reg     [DMA_ADDR_WIDTH-1:0]    read_addr; // in 64B uint
-reg     [DMA_ADDR_WIDTH-1:0]    read_length;
-reg     [DMA_ADDR_WIDTH-1:0]    read_start_addr;
-reg					            read_init;
-reg     [DMA_ADDR_WIDTH-1:0]    read_left;
-reg                             read_en;
-wire				            ddr_read_addr_send;
-
+(* MARK_DEBUG="true" *)reg     [DMA_ADDR_WIDTH-1:0]    read_addr; // in 64B uint
+(* MARK_DEBUG="true" *)reg     [DMA_ADDR_WIDTH-1:0]    read_length;
+(* MARK_DEBUG="true" *)reg     [DMA_ADDR_WIDTH-1:0]    read_start_addr;
+(* MARK_DEBUG="true" *)reg					            read_init;
+(* MARK_DEBUG="true" *)reg     [DMA_ADDR_WIDTH-1:0]    read_left = 0;
+(* MARK_DEBUG="true" *)reg                             read_en;
+(* MARK_DEBUG="true" *)wire				            ddr_read_addr_send;
 
 always @ (posedge clk)
 begin
@@ -297,16 +296,24 @@ begin
   if(read_init)
 	read_addr <= read_start_addr;
   else if (ddr_read_addr_send)
-	read_addr <= read_addr + 1;
+	  read_addr <= read_addr + MAX_ARLEN;
 end
 
 // Assuming the read_length is always >= 2
 always @ (posedge clk)
 begin
-  if(read_init)
-    read_left  <= read_length;
-  else if (ddr_read_addr_send)
-    read_left  <= read_left - 1;
+  if (rst)
+    read_left <= 0;
+  else begin
+    if(read_init)
+      read_left  <= read_length;
+    else if (ddr_read_addr_send) begin
+      if (read_left > MAX_ARLEN)
+        read_left  <= read_left - MAX_ARLEN;
+      else
+        read_left  <= 0;
+    end
+  end
 end
 
 always @ (posedge clk)
@@ -319,32 +326,39 @@ begin
     read_en    <= 0;
 end
 
-reg     read_credit_val;
-wire    ddr_read_addr_fifo_afull;
-wire    ddr_read_addr_fifo_empty;
+(* MARK_DEBUG="true" *)reg     read_credit_val;
+(* MARK_DEBUG="true" *)wire    ddr_read_addr_fifo_afull;
+(* MARK_DEBUG="true" *)wire    ddr_read_addr_fifo_empty;
 
-assign	read_done			= ddr_read_addr_send &
-                        (~|read_left [DMA_ADDR_WIDTH-1:1]) &
-                        read_left [0];
+assign	read_done			= ddr_read_addr_send & (read_left <= MAX_ARLEN);
 assign	ddr_read_addr_send	= ~ddr_read_addr_fifo_afull & read_en;
+
+(* MARK_DEBUG="true" *)reg [7:0] burst_len;
+always @(*) begin
+  if (read_left > MAX_ARLEN)
+    burst_len <= 8'hFF;
+  else if (read_left > 0)
+    burst_len <= read_left - 1;
+  else
+    burst_len <= 0;
+end
 
 ddr_read_addr_fifo	ddr_read_addr_fifo
 (
 	.srst(rst),
 	.wr_clk(clk),
 	.wr_en(ddr_read_addr_send),
-	.din(read_addr),
+	.din({read_addr, burst_len}),
 	.rd_clk(ddr_clk),
 	.rd_en(m_axi_arvalid),
-	.dout(m_axi_araddr[C_M_AXI_ADDR_WIDTH-1:6]),
+	.dout({m_axi_araddr[C_M_AXI_ADDR_WIDTH-1:6], m_axi_arlen}), // 1bit less than DIN
 	.full(),
 	.empty(ddr_read_addr_fifo_empty),
 	.prog_full(ddr_read_addr_fifo_afull)
 );
 
-assign m_axi_arvalid = m_axi_arready & (~ddr_read_addr_fifo_empty) & read_credit_val;
+assign m_axi_arvalid = m_axi_arready & (~ddr_read_addr_fifo_empty); // & read_credit_val;
 assign m_axi_araddr[5:0] = 6'b0;
-
 
 // Read address channel
 assign m_axi_arid = 0;
@@ -355,34 +369,53 @@ assign m_axi_arburst = 2'b01; // INCR burst mode
 assign m_axi_arcache = 4'b0010;
 assign m_axi_aruser = 1'b1;
 assign m_axi_arsize = 3'b110; // 64bytes burst, 1 beat on 512b width bus
-assign m_axi_arlen = 0;
 
 // Generate dma interface signals
-wire						        ddr_read_data_fifo_rd;
-wire	[C_M_AXI_DATA_WIDTH-1:0]    ddr_read_data_fifo_out;
-wire						        ddr_read_data_fifo_empty;
-wire						        ddr_read_sync_fifo_empty;
-wire						        last_read_dly;
-wire	[WIDTH-1:0]			        read_ack_dly;
+(* MARK_DEBUG="true" *)wire						        ddr_read_data_fifo_rd;
+(* MARK_DEBUG="true" *)wire	[C_M_AXI_DATA_WIDTH-1:0]    ddr_read_data_fifo_out;
+(* MARK_DEBUG="true" *)wire						        ddr_read_data_fifo_empty;
+(* MARK_DEBUG="true" *)wire						        ddr_read_info_fifo_empty;
+(* MARK_DEBUG="true" *)wire						        ddr_read_sync_fifo_empty;
+(* MARK_DEBUG="true" *)wire						        last_read_dly;
+(* MARK_DEBUG="true" *)wire	[WIDTH-1:0]			  read_ack_dly;
 
+(* MARK_DEBUG="true" *)wire [7:0] cur_burst_len; // 0~255, burst length - 1
+(* MARK_DEBUG="true" *)wire       ddr_read_info_fifo_rd;
+(* MARK_DEBUG="true" *)wire       last_beat;
+(* MARK_DEBUG="true" *)reg  [7:0] burst_left = 0; // 0~255
+
+// read data_fifo cur_burst_len-1 times alone
+// then read info_fifo and data_fifo simutaniously the last time
+assign last_beat = (burst_left == 1) | (cur_burst_len == 0);
+assign ddr_read_info_fifo_rd = ddr_read_data_fifo_rd & last_beat;
+
+always @(posedge clk) begin
+  if (ddr_read_data_fifo_rd & (burst_left == 0))
+    burst_left <= cur_burst_len;
+  else if (ddr_read_data_fifo_rd)
+    burst_left <= burst_left - 1;
+  else
+    burst_left <= burst_left;
+end
 
 ddr_read_info_fifo	ddr_read_info_fifo
 (
     .srst(rst),
     .clk(clk),
     .wr_en(ddr_read_addr_send),
-    .din({read_done, read_ack_keep}),
+    .din({read_done, read_ack_keep, burst_len}),
 
-    .rd_en(ddr_read_data_fifo_rd),
-    .dout({last_read_dly, read_ack_dly}),
+    .rd_en(ddr_read_info_fifo_rd),
+    .dout({last_read_dly, read_ack_dly, cur_burst_len}),
 
     .full(),
-    .empty()
+    .empty(ddr_read_info_fifo_empty)
 );
+
 
 assign	ddr_read_data_fifo_rd	= ~ddr_read_data_fifo_empty & dout_rdy;
 
-wire  ddr_read_data_fifo_full;
+(* MARK_DEBUG="true" *)wire  ddr_read_data_fifo_full;
 ddr_read_data_fifo	ddr_read_data_fifo
 (
     .srst(rst),
@@ -404,11 +437,11 @@ always @ (posedge clk)
 begin
     dout		<= ddr_read_data_fifo_out;
     dout_en		<= {16{ddr_read_data_fifo_rd}} & read_ack_dly;
-    dout_eop	<= last_read_dly;
+    dout_eop	<= last_read_dly & last_beat & ddr_read_data_fifo_rd;
 end
 
 
-wire					ddr_read_sync_fifo_rd;
+(* MARK_DEBUG="true" *)wire					ddr_read_sync_fifo_rd;
 
 ASYNC_FIFO_WRAPPER # (3, 1) ddr_read_sync_fifo
 (
@@ -425,11 +458,11 @@ ASYNC_FIFO_WRAPPER # (3, 1) ddr_read_sync_fifo
     .r_empty_o(ddr_read_sync_fifo_empty)
 );
 
-wire    ddr_read_en;
+(* MARK_DEBUG="true" *)wire    ddr_read_en;
 assign	ddr_read_sync_fifo_rd = ~ddr_read_sync_fifo_empty;
 assign	ddr_read_en = m_axi_arready & m_axi_arvalid;
 
-reg		[8:0]		read_credit;
+(* MARK_DEBUG="true" *)reg		[8:0]		read_credit;
 
 always @ (posedge ddr_clk)
     read_credit_val	<= ~&read_credit [8:3];

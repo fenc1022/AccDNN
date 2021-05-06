@@ -26,7 +26,7 @@ proc sim {} {
     view wave
     radix h
 #	add wave /model_tb/*
-    do ../wave/cifar10.do
+    do ../wave/alexnet.do
 #    do ../wave/zf.do
 #    do ../wave/tiny_yolov2.do
     view structure

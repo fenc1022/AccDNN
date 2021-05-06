@@ -6,12 +6,12 @@ set ip_path $src_path/sources_1/ip
 create_project $project_name $project_path -part $fpga_part
 
 create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name ddr_write_fifo
-set_property -dict [list CONFIG.Fifo_Implementation {Independent_Clocks_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {544} CONFIG.Input_Depth {512} CONFIG.Output_Data_Width {512} CONFIG.Output_Depth {512} CONFIG.Read_Clock_Frequency {250} CONFIG.Write_Clock_Frequency {250} CONFIG.Programmable_Full_Type {Single_Programmable_Full_Threshold_Constant} CONFIG.Full_Threshold_Assert_Value {480}] [get_ips ddr_write_fifo]
+set_property -dict [list CONFIG.Fifo_Implementation {Independent_Clocks_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {512} CONFIG.Input_Depth {512} CONFIG.Output_Data_Width {512} CONFIG.Output_Depth {512} CONFIG.Read_Clock_Frequency {250} CONFIG.Write_Clock_Frequency {250} CONFIG.Programmable_Full_Type {Single_Programmable_Full_Threshold_Constant} CONFIG.Full_Threshold_Assert_Value {480}] [get_ips ddr_write_fifo]
 generate_target all [get_files  $ip_path/ddr_write_fifo/ddr_write_fifo.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_write_fifo/ddr_write_fifo.xci]
 
 create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name ddr_read_info_fifo
-set_property -dict [list CONFIG.Fifo_Implementation {Common_Clock_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {17} CONFIG.Input_Depth {1024} CONFIG.Output_Data_Width {17} CONFIG.Output_Depth {1024}] [get_ips ddr_read_info_fifo]
+set_property -dict [list CONFIG.Fifo_Implementation {Common_Clock_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {25} CONFIG.Input_Depth {1024} CONFIG.Output_Data_Width {25} CONFIG.Output_Depth {1024}] [get_ips ddr_read_info_fifo]
 generate_target all [get_files  $ip_path/ddr_read_info_fifo/ddr_read_info_fifo.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_read_info_fifo/ddr_read_info_fifo.xci]
 
@@ -21,7 +21,7 @@ generate_target all [get_files  $ip_path/ddr_read_data_fifo/ddr_read_data_fifo.x
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_read_data_fifo/ddr_read_data_fifo.xci]
 
 create_ip -name fifo_generator -vendor xilinx.com -library ip -module_name ddr_read_addr_fifo
-set_property -dict [list CONFIG.Fifo_Implementation {Independent_Clocks_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {27} CONFIG.Input_Depth {512} CONFIG.Output_Data_Width {27} CONFIG.Output_Depth {512} CONFIG.Read_Clock_Frequency {250} CONFIG.Write_Clock_Frequency {250} CONFIG.Programmable_Full_Type {Single_Programmable_Full_Threshold_Constant} CONFIG.Full_Threshold_Assert_Value {480}] [get_ips ddr_read_addr_fifo]
+set_property -dict [list CONFIG.Fifo_Implementation {Independent_Clocks_Builtin_FIFO} CONFIG.Performance_Options {First_Word_Fall_Through} CONFIG.Input_Data_Width {35} CONFIG.Input_Depth {512} CONFIG.Output_Data_Width {35} CONFIG.Output_Depth {512} CONFIG.Read_Clock_Frequency {250} CONFIG.Write_Clock_Frequency {250} CONFIG.Programmable_Full_Type {Single_Programmable_Full_Threshold_Constant} CONFIG.Full_Threshold_Assert_Value {480}] [get_ips ddr_read_addr_fifo]
 generate_target all [get_files  $ip_path/ddr_read_addr_fifo/ddr_read_addr_fifo.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_path/ddr_read_addr_fifo/ddr_read_addr_fifo.xci]
 
@@ -105,7 +105,7 @@ add_files {
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_bm_ram/conv1_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv1_rm_ram/conv1_rm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_bm_ram.xci
-   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_bm_ram/conv2_rm_ram.xci
+   ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_rm_ram/conv2_rm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv2_wm_ram/conv2_wm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_bm_ram/conv3_bm_ram.xci
    ./../../build/ips_prj/ips_prj.srcs/sources_1/ip/conv3_rm_ram/conv3_rm_ram.xci

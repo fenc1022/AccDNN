@@ -204,7 +204,6 @@ ddr3_dma_read #
 (
     .DMA_ADDR_WIDTH         ( DMA_ADDR_WIDTH        ),
     .C_M_AXI_ID_WIDTH       ( C_M_AXI_ID_WIDTH      ),
-    .C_M_AXI_BURST_LEN      ( 1                     ),
     .C_M_AXI_ADDR_WIDTH     ( C_M_AXI_ADDR_WIDTH    ),
     .C_M_AXI_DATA_WIDTH     ( C_M_AXI_DATA_WIDTH    )
 

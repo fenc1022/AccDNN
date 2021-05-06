@@ -1,8 +1,8 @@
 `timescale 1ns/1ns
 
 `define half_clk_cycle 50
-`define total_input_count 128 //6912 //96*2
-`define total_weight_count 4572 //3468 //516262 //4568 //4544
+`define total_input_count 6443 //128 //6912 //96*2
+`define total_weight_count 910807 //4572 //3468 //516262 //4568 //4544
 `define iterations 1
 `define databus_width 512
 module model_tb();
@@ -336,9 +336,12 @@ integer file_pool1;
 integer file_conv2;
 integer file_pool2;
 integer file_conv3;
-integer file_pool3;
-integer file_ip1;
-integer file_ip2;
+integer file_conv4;
+integer file_conv5;
+integer file_pool5;
+integer file_fc6;
+integer file_fc7;
+integer file_fc8;
 integer file_out;
 
 initial
@@ -351,9 +354,12 @@ initial
     file_conv2 = $fopen({"../data/conv2_sim.dat"},"w");
 	file_pool2 = $fopen({"../data/pool2_sim.dat"},"w");
     file_conv3 = $fopen({"../data/conv3_sim.dat"},"w");
-    file_pool3 = $fopen({"../data/pool3_sim.dat"},"w");
-    file_ip1 = $fopen({"../data/ip1_sim.dat"},"w");
-    file_ip2 = $fopen({"../data/ip2_sim.dat"},"w");
+    file_conv4 = $fopen({"../data/conv4_sim.dat"},"w");
+    file_conv5 = $fopen({"../data/conv5_sim.dat"},"w");
+    file_pool5 = $fopen({"../data/pool5_sim.dat"},"w");
+    file_fc6 = $fopen({"../data/fc6_sim.dat"},"w");
+    file_fc7 = $fopen({"../data/fc7_sim.dat"},"w");
+    file_fc8 = $fopen({"../data/fc8_sim.dat"},"w");
     file_out   = $fopen({"../data/out_sim.dat"},"w");
   end
 
@@ -483,25 +489,49 @@ always @(posedge clk)
 
 always @(posedge clk)
   begin
-    if(u0_module.u0_pool3_layer.blob_dout_en)
+    if(u0_module.u0_conv4_layer.blob_dout_en)
       begin
-       $fdisplay(file_pool3,"%h",u0_module.u0_pool3_layer.blob_dout);
+       $fdisplay(file_conv4,"%h",u0_module.u0_conv4_layer.blob_dout);
       end
   end
 
 always @(posedge clk)
   begin
-    if(u0_module.u0_ip1_layer.blob_dout_en)
+    if(u0_module.u0_conv5_layer.blob_dout_en)
       begin
-       $fdisplay(file_ip1,"%h",u0_module.u0_ip1_layer.blob_dout);
+       $fdisplay(file_conv5,"%h",u0_module.u0_conv5_layer.blob_dout);
       end
   end
 
 always @(posedge clk)
   begin
-    if(u0_module.u0_ip2_layer.blob_dout_en)
+    if(u0_module.u0_pool5_layer.blob_dout_en)
       begin
-       $fdisplay(file_ip2,"%h",u0_module.u0_ip2_layer.blob_dout);
+       $fdisplay(file_pool5,"%h",u0_module.u0_pool5_layer.blob_dout);
+      end
+  end
+
+always @(posedge clk)
+  begin
+    if(u0_module.u0_fc6_layer.blob_dout_en)
+      begin
+       $fdisplay(file_fc6,"%h",u0_module.u0_fc6_layer.blob_dout);
+      end
+  end
+
+always @(posedge clk)
+  begin
+    if(u0_module.u0_fc7_layer.blob_dout_en)
+      begin
+       $fdisplay(file_fc7,"%h",u0_module.u0_fc7_layer.blob_dout);
+      end
+  end
+
+always @(posedge clk)
+  begin
+    if(u0_module.u0_fc8_layer.blob_dout_en)
+      begin
+       $fdisplay(file_fc8,"%h",u0_module.u0_fc8_layer.blob_dout);
       end
   end
 

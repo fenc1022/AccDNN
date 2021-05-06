@@ -13,7 +13,7 @@ generate
 		assign out = in;
 	end
 	else if (N == 1) begin
-(*mark_debug="true"*)reg				delay_line;
+		reg				delay_line;
 
 		always @ (posedge clk)
 		begin
@@ -24,7 +24,7 @@ generate
 	end
 	else begin
 		genvar i;
-(*mark_debug="true"*)reg		[N-1:0]		delay_line;
+		reg		[N-1:0]		delay_line;
 
 		always @ (posedge clk)
 		begin
